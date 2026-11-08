@@ -1,2 +1,187 @@
 # SecretMoney
-Reengineer MYM
+
+SecretMoney is a Windows-oriented preservation, installation, interoperability,
+and data-conversion project for running Managing Your Money 12 for DOS on a
+modern Windows system.
+
+The project does **not** contain or distribute Managing Your Money.
+
+Users must provide their own installation media.
+
+SecretMoney documents a reproducible environment for installing and running
+the software with DOSBox-X and provides independently developed tools for
+moving modern financial data into formats understood by the original
+application.
+
+## Project Goals
+
+SecretMoney is intended to:
+
+- Document installation of Managing Your Money 12 from original/user-supplied
+  floppy disk images.
+- Provide a repeatable DOSBox-X setup for Windows.
+- Support storing the working environment in OneDrive.
+- Provide separate DOS C: and D: working drives.
+- Document observed MYM 12 file formats and behavior.
+- Document tested MYM 12 QIF compatibility.
+- Convert modern financial data into formats MYM 12 can import.
+- Integrate with the SecretBeans / SecretForecast bookkeeping workflow.
+- Preserve information needed to use old personal financial data on modern
+  systems.
+
+## What SecretMoney Does Not Contain
+
+This repository must not contain:
+
+- Managing Your Money disk images
+- Original installation archives
+- MYM.EXE or other original executables
+- Original program resources
+- Original documentation or artwork
+- Copyrighted installation files
+- Personal financial databases
+- Real account statements or credentials
+
+SecretMoney is not a distribution of Managing Your Money.
+
+## Current Environment
+
+Development and testing currently target:
+
+- Windows
+- PowerShell
+- DOSBox-X
+- Managing Your Money 12 for DOS
+- OneDrive for synchronized storage
+- QIF for financial-data interchange
+
+Example host layout:
+
+    C:\Users\<user>\OneDrive\MYM\
+        DriveC\
+        DriveD\
+
+DOSBox-X maps these folders as:
+
+    C: -> OneDrive\MYM\DriveC
+    D: -> OneDrive\MYM\DriveD
+
+The MYM program and active MYM data remain outside the SecretMoney Git
+repository.
+
+## QIF Compatibility Research
+
+Testing against MYM 12 has currently demonstrated successful importing of:
+
+- Dates
+- Payments
+- Deposits
+- Payees
+- Memos
+- Categories
+- Check numbers
+- Split transactions
+
+Additional behavior still requires testing and documentation.
+
+In particular, MYM has its own native account-transfer mechanism. A tested QIF
+transfer did not reproduce the same native linked-transfer behavior, so
+SecretMoney must not assume modern QIF transfer behavior is supported by
+MYM 12.
+
+All compatibility claims in this project should be based on observed tests.
+
+## SecretBeans Integration
+
+The intended data path is:
+
+    Bank CSV files
+        |
+        v
+    SecretBeans
+        |
+        v
+    SecretForecast
+        |
+        v
+    SecretMoney QIF conversion
+        |
+        v
+    Managing Your Money 12
+
+SecretBeans remains responsible for its existing transaction normalization and
+transfer/card-payment detection logic.
+
+SecretMoney should consume normalized data rather than duplicate that logic.
+
+## Repository Structure
+
+Planned structure:
+
+    SecretMoney/
+    |
+    +-- README.md
+    +-- LICENSE
+    +-- .gitignore
+    |
+    +-- .github/
+    |   +-- copilot-instructions.md
+    |
+    +-- docs/
+    |   +-- INSTALL.md
+    |   +-- QIF-COMPATIBILITY.md
+    |   +-- RESEARCH.md
+    |   +-- screenshots/
+    |
+    +-- scripts/
+    |   +-- Setup-SecretMoney.ps1
+    |   +-- Mount-SecretMoney.bat
+    |
+    +-- tests/
+        +-- qif/
+
+## Development Approach
+
+SecretMoney uses an evidence-driven workflow:
+
+1. Test one MYM behavior.
+2. Record exactly what happened.
+3. Preserve a reproducible test case.
+4. Document the result.
+5. Implement only what has been verified.
+6. Test the implementation against MYM.
+
+Do not infer MYM behavior from current versions of Quicken or other modern
+financial applications.
+
+## AI-Assisted Development
+
+SecretMoney is intentionally developed with AI assistance, including GitHub
+Copilot and Microsoft Copilot.
+
+AI-generated code, documentation, tests, and research notes are expected parts
+of the development process.
+
+AI-generated changes must still be reviewed and tested before they are treated
+as authoritative project behavior.
+
+Where appropriate, source files may include a brief note indicating that they
+were created or modified with Copilot assistance.
+
+## Licensing
+
+Original SecretMoney source code and original project documentation are
+licensed under the MIT License unless otherwise noted.
+
+The MIT License applies only to material developed for SecretMoney.
+
+It does not grant rights to Managing Your Money or any other third-party
+software, documentation, trademarks, artwork, or data.
+
+## Status
+
+Experimental.
+
+The project currently focuses on documenting a reproducible MYM 12 environment
+and determining the safest and most reliable way to import data generated by
+SecretBeans / SecretForecast.

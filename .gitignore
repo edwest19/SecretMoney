@@ -1,0 +1,50 @@
+# Managing Your Money original software
+*.img
+*.ima
+*.dsk
+*.7z
+*.zip
+*.exe
+*.chp
+*.myc
+*.hlp
+*.pif
+*.ico
+
+# MYM databases / user data
+*.dbs
+
+# Runtime directories
+MYM12/
+DriveC/
+DriveD/
+data/
+backup/
+
+# Financial source data
+*.qif
+*.ofx
+*.qfx
+
+# Allow synthetic QIF regression fixtures
+!tests/qif/*.qif
+
+# Secrets
+.env
+*.key
+*.pem
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Visual Studio / VS Code
+.vs/
+.vscode/
+bin/
+obj/
+
+# Temporary files
+*.tmp
+*.bak
+*.log
