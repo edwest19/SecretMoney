@@ -4,3 +4,7 @@
 # for DOS reads them. Git must never convert their line endings.
 *.qif -text
 *.QIF -text
+
+# AI-generated (Claude): the SecretBeans test data and hledger's output for it are kept byte for byte too.
+tests/secretbeans/**/*.journal -text
+tests/secretbeans/*.csv -text
