@@ -64,15 +64,15 @@ The test QIF files were placed on the DOSBox-X D: drive and imported through MYM
 | MYM native account transfer | PASS |
 <!-- AI-generated (Claude): rows below added for round 2, 2026-11-10 -->
 | Charge account using `!Type:CCard` (round 2) | PASS |
-| Payee length (round 2) | 25 characters shown |
-| Category length (round 2) | 15 characters shown |
+| Payee length (round 2) | 25 characters; up to 40 copied into the memo as `Full Name:` |
+| Category length (round 2) | 15 characters; up to 31 copied into the memo as `*Category Full Name*:` |
 | Colon in a category (round 2) | One category name, not a subcategory |
 | Punctuation in a payee (round 2) | PASS |
 | New categories (round 2) | Created without asking |
 | Several entries in one file, lower-case categories (round 2) | PASS |
 | Same file imported twice (round 2) | MYM warned |
 | Transfer as an ordinary entry in both accounts, category `Transfer` (round 2) | PASS for balances; not linked |
-| Memo length (round 2) | Pending re-check |
+| Memo length (round 2) | 40 characters of the QIF `M` field kept |
 
 These results apply only to the specific behavior tested.
 
@@ -298,19 +298,38 @@ Result: PASS.
 
 The long values carry position markers: each 10-character block ends with its own position.
 
-| Field | Written | Shown in MYM | Characters shown |
+| Field | Written | Kept by MYM | Characters |
 |---|---|---|---|
 | Payee | `PAYEE-0010` ... `PAYEE-0080` (80) | `PAYEE-0010PAYEE-0020PAYEE` | 25 |
-| Memo | `MEMO--0010` ... `MEMO--0080` (80) | reported as `PAYEE-0010PAYEE-0020PAYEE-0030PAYEE-004` | pending re-check |
-| Category | `CATEG-0010` ... `CATEG-0040` (40) | `CATEG-0010CATEG` ("kept whole I think") | 15 |
+| Memo | `MEMO--0010` ... `MEMO--0080` (80) | `MEMO--0010MEMO--0020MEMO--0030MEMO--0040` | 40 |
+| Category | `CATEG-0010` ... `CATEG-0040` (40) | `CATEG-0010CATEG` | 15 |
 | Category with colon | `testfood:testgroceries` | one category, `testfood:testgr` | 15 |
 
-- The memo answer shows payee markers, not the memo's `MEMO--` markers, so where it was read
-  needs a re-check.
-- Whether MYM stores more than the 25 payee and 15 category characters it shows has not been
-  established.
-- A colon is not a subcategory separator in MYM 12: `testfood:testgroceries` became one
-  category, cut to the same 15 characters as the long category.
+A re-check the same day, from screenshots of the entries (Edwin, DESKTOP-URULEFH), showed what
+MYM does with the part that does not fit:
+
+- **Long payee.** The memo of the -1.01 entry, opened with F2 (View/Edit Memo), holds two lines:
+
+      Full Name: PAYEE-0010PAYEE-0020PAYEE-0030PAYEE-0040
+      MEMO--0010MEMO--0020MEMO--0030MEMO--0040
+
+  MYM added a `Full Name:` line holding the first 40 characters of the payee, and kept the
+  first 40 characters of the QIF `M` field on the next line.
+- **Long category.** The -2.02 entry's category is `CATEG-0010CATEG` (15 characters). Its memo
+  holds:
+
+      *Category Full Name*:
+           CATEG-0010CATEG-0020CATEG-0030C
+
+  MYM added a `*Category Full Name*:` line holding the first 31 characters of the category.
+- The memo field on the transaction screen shows only the start of the memo's first line. The
+  first answer to the memo question, `PAYEE-0010PAYEE-0020PAYEE-0030PAYEE-004`, matches the
+  end of the 50 characters visible there: `Full Name: ` plus 39 characters.
+- Not checked: whether MYM adds these memo lines when the payee or category fits, and what it
+  did with the memo of the colon category entry.
+
+A colon is not a subcategory separator in MYM 12: `testfood:testgroceries` became one
+category, cut to the same 15 characters as the long category.
 - `T2 PUNCT #*&/'.,-() TEST` showed exactly as written.
 - New categories were created without asking.
 
@@ -340,8 +359,10 @@ links them.
 - Charge accounts are written as `!Type:CCard`, with the card's own amount: a charge negative,
   a payment positive. That is the sign the card account's posting already has in hledger.
 - The exporter cuts payees to 25 characters and categories to 15 itself, so what it writes is
-  exactly what MYM shows, and it reports any two hledger categories that become the same
+  exactly what MYM keeps, and it reports any two hledger categories that become the same
   15-character name.
+- When a bank description is longer than 25 characters, the exporter writes its first 40
+  characters as the memo, so the longer text MYM would otherwise copy there is kept.
 - Category names carry no colon.
 - Transfers and card payments are written as an ordinary entry in both accounts, category
   `Transfer`.

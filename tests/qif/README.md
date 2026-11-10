@@ -60,8 +60,8 @@ Imported by Edwin on DESKTOP-URULEFH, 2026-11-10. Details in
 | 3 | Yes |
 | 4 | Not needed |
 | 5 | `PAYEE-0010PAYEE-0020PAYEE`: 25 characters |
-| 6 | Pending re-check (reported text showed payee markers) |
-| 7 | `CATEG-0010CATEG`: 15 characters shown |
+| 6 | 40 characters of the memo kept; MYM also added `Full Name:` with the first 40 characters of the payee |
+| 7 | `CATEG-0010CATEG`: 15 characters; MYM added `*Category Full Name*:` with the first 31 to the memo |
 | 8 | One category, `testfood:testgr` |
 | 9 | Yes |
 | 10 | Created without asking |
