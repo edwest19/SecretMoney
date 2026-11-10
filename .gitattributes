@@ -1,0 +1,6 @@
+# Written by Claude (Anthropic) with Edwin West, 2026-11-10.
+#
+# QIF fixtures are kept byte for byte: ASCII with CRLF line endings, as MYM 12
+# for DOS reads them. Git must never convert their line endings.
+*.qif -text
+*.QIF -text
