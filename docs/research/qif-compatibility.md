@@ -270,7 +270,7 @@ No approach should be marked supported until tested.
 
 Round 2 tested what the SecretBeans-to-QIF exporter depends on. The test files and the
 questions asked are in `tests\qif\` and `tests\qif\README.md`. Edwin imported them into a
-throwaway MYM 12 data set on DESKTOP-URULEFH, into accounts `Chase` and `Savings` (from round 1)
+throwaway MYM 12 data set on his PC, into accounts `Chase` and `Savings` (from round 1)
 and a new account `Card`. His answers are recorded below as given; character counts were
 computed from the text he reported.
 
@@ -305,7 +305,7 @@ The long values carry position markers: each 10-character block ends with its ow
 | Category | `CATEG-0010` ... `CATEG-0040` (40) | `CATEG-0010CATEG-0020` in the category list; `CATEG-0010CATEG` in the register | at least 20 |
 | Category with colon | `testfood:testgroceries` | one category; `testfood:testgr` in the register | 15 shown in the register |
 
-A re-check the same day, from screenshots of the entries (Edwin, DESKTOP-URULEFH), showed what
+A re-check the same day, from Edwin's screenshots of the entries, showed what
 MYM does with the part that does not fit:
 
 - **Long payee.** The memo of the -1.01 entry, opened with F2 (View/Edit Memo), holds two lines:

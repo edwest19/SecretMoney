@@ -15,7 +15,8 @@
 - **Never work around a refused permission or security check.** Say what was refused and give Edwin the proper fix.
 - **No guessing.** Facts come from the code, the logs, a recorded test, or a cited source. Say where every test ran: the cloud Linux container, CI on `windows-latest`, or Edwin's PC.
 - **Mark AI-written code:** a header naming Claude in each file Claude writes; an `AI-generated (Claude):` comment on lines Claude changes in files it didn't write; `Co-Authored-By:` at the end of each commit.
-- Commands for Edwin are Windows PowerShell, one line each, starting with `cd C:\Users\edwes\source\repos\SecretMoney`.
+- Commands for Edwin are Windows PowerShell, one line each, starting with `cd` to the repository's folder on his PC.
+- **The repository is public.** No PC names, Windows user folders or other personal details in files Claude writes; refer to "Edwin's PC".
 
 ## Layout
 
@@ -78,6 +79,5 @@
 ## Known gaps
 
 - The exporter isn't built (README §10). Planned rules, from the round-2 research: one QIF file per MYM account; Charge accounts as `!Type:CCard`; payee cut to 25 characters, a longer description's first 40 characters as the memo; category is the last part of the hledger account name, lower case, cut to 20 characters, no colon; transfers and card payments as an ordinary entry in both accounts under `Transfer`; only dates after the previous export. Read through `hledger print -O csv`.
-- The repository is private, and the release flow needs required reviewers on the `release` environment (README §10).
 - `scripts/powershell/Install-SecretMoney.ps1` line 107 has a truncated message.
 - `.github/Copilot-Instructions.md` still names SecretForecast.
