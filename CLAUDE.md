@@ -10,6 +10,7 @@
 - **Microsoft packages only** (README §1). **No network API** in `SecretMoney.Core` or `SecretMoney.UI`. **Only `runFullTrust`.** The app's data goes only in `ApplicationData.Current.LocalFolder`.
 - **No MYM files or personal financial data** in the repository (README §7). Tests use synthetic data.
 - **MYM behaviour comes from observed tests** (`docs/research/qif-compatibility.md`), never from what Quicken or other software does. A new MYM behaviour the code relies on needs a test file in `tests/qif` and a recorded result first.
+- **Never change the QIF format silently.** `docs/qif-format.md` is locked by `QifWriterTests`. A change needs Edwin's approval, a new version of the spec, and a new import test in MYM.
 - **Bugs are fixed test-first:** a failing test, pushed and shown failing in CI, then the fix.
 - **Never weaken, skip or delete a test to make it pass**, or change a known-answer test's expected values.
 - **Never work around a refused permission or security check.** Say what was refused and give Edwin the proper fix.
@@ -20,11 +21,14 @@
 
 ## Layout
 
-- `SecretMoney.Core/` — everything that isn't the window. Plain .NET 10, no Windows dependencies. Empty in this version.
+- `SecretMoney.Core/` — everything that isn't the window. Plain .NET 10, no Windows dependencies.
+  - `Qif/` — `QifWriter` (writes `docs/qif-format.md` version 1), `QifText` (cleaning and fitting text), `QifTransaction`, `QifAccountType`, `MymLimits` (25 / 40 / 20, from round 2), `QifFormatException`. Nothing in the app uses them yet.
 - `SecretMoney.Core.Tests/` — MSTest tests:
   - `RepositoryRulesTests` — Microsoft packages only, no network API, only `runFullTrust`, no path built under AppData, no MYM file types
   - `ReleaseRulesTests` — publisher, version in three places, changelog, signing subject, pinned actions, package name, x64, solution file
   - `QifFixtureTests` — `tests/qif/*.qif` are ASCII, CRLF, with a `!Type` header and closed records
+  - `QifWriterTests` — known-answer tests for `docs/qif-format.md`, including byte-for-byte copies of the round-2 files MYM imported
+  - `QifTextTests` — the text rules, step by step
   - `TestHelper` — finds the repository root (the folder with `SecretMoney.slnx`)
 - `SecretMoney.UI/` — the WinUI 3 app, packaged as MSIX (x64). `App.xaml(.cs)`, `MainWindow.xaml(.cs)` (a placeholder window), `Package.appxmanifest`, `app.manifest`, `Assets/` (SecretLead's icons), `Properties/launchSettings.json`.
 - `docs/installation/` — installing MYM 12 in DOSBox-X: `INSTALL.md` and `01`–`05`. Written with Copilot.
@@ -63,6 +67,7 @@
 | §2 stores nothing in this version | `SecretMoney.UI/App.xaml.cs`, `MainWindow.xaml.cs` | — (read the code) |
 | §5 scripts | `scripts/powershell/*.ps1`, `scripts/dosbox/*.bat` | — (read the scripts) |
 | §6 MYM 12 QIF behaviour | `docs/research/qif-compatibility.md`, `tests/qif/` | `QifFixtureTests` (file bytes only; the results were observed in MYM) |
+| §1, §6 what SecretMoney writes | `docs/qif-format.md`, `SecretMoney.Core/Qif/` | `QifWriterTests`, `QifTextTests` |
 | §7 no MYM files | `.gitignore` | `RepositoryRulesTests.Repository_ContainsNoManagingYourMoneyFiles` |
 | Install: self-contained MSIX | `SecretMoney.UI/SecretMoney.UI.csproj`, workflows | `scripts/Test-Msix.ps1` in CI |
 | Releases: version in three places | `Directory.Build.props`, `Package.appxmanifest`, `CHANGELOG.md` | `ReleaseRulesTests.ManifestVersion_IsTheProjectVersionPlusZero`, `Changelog_HasAnEntryForTheProjectVersion` |
@@ -78,6 +83,6 @@
 
 ## Known gaps
 
-- The exporter isn't built (README §10). Planned rules, from the round-2 research: one QIF file per MYM account; Charge accounts as `!Type:CCard`; payee cut to 25 characters, a longer description's first 40 characters as the memo; category is the last part of the hledger account name, lower case, cut to 20 characters, no colon; transfers and card payments as an ordinary entry in both accounts under `Transfer`; only dates after the previous export. Read through `hledger print -O csv`.
+- The exporter isn't finished (README §10): the QIF writer is built; the SecretBeans reader, the export rules and the window aren't. Planned rules, from the round-2 research: one QIF file per MYM account; Charge accounts as `!Type:CCard`; payee cut to 25 characters, a longer description's first 40 characters as the memo; category is the last part of the hledger account name, lower case, cut to 20 characters, no colon; transfers and card payments as an ordinary entry in both accounts under `Transfer`; only dates after the previous export. Read through `hledger print -O csv`.
 - `scripts/powershell/Install-SecretMoney.ps1` line 107 has a truncated message.
 - `.github/Copilot-Instructions.md` still names SecretForecast.
