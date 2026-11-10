@@ -50,7 +50,7 @@ The long values carry position markers: each 10-character block ends with its ow
 
 ### Results
 
-Imported by Edwin on DESKTOP-URULEFH, 2026-11-10. Details in
+Imported by Edwin on his PC, 2026-11-10. Details in
 [docs/research/qif-compatibility.md](../../docs/research/qif-compatibility.md#round-2-2026-11-10).
 
 | # | Answer |

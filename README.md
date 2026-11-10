@@ -104,7 +104,7 @@ The MYM program and your MYM data stay outside this repository.
 Scripts (not part of the app; run by hand from PowerShell or DOSBox-X):
 
 - `scripts/powershell/Install-SecretMoney.ps1` — checks for winget, 7-Zip and DOSBox-X without installing anything, creates `OneDrive\MYM`, `DriveC` and `DriveD` if missing (supports `-WhatIf`), and prints the DOSBox-X mount commands. It downloads, copies and installs nothing.
-- `scripts/dosbox/Mount-SecretMoney.bat` — run inside DOSBox-X: mounts C: and D: on `C:\Users\edwes\OneDrive\MYM\DriveC` and `DriveD` and changes to `C:\MYM12`. The paths are Edwin's.
+- `scripts/dosbox/Mount-SecretMoney.bat` — run inside DOSBox-X: mounts C: and D: on the `OneDrive\MYM\DriveC` and `DriveD` folders and changes to `C:\MYM12`. The paths are hard-coded to Edwin's Windows user folder; edit them for another user.
 - `scripts/powershell/New-Qif.ps1` — writes a one-transaction banking QIF file (ASCII, CRLF), by default `OneDrive\MYM\DriveD\IMPORT.QIF`, for testing imports by hand.
 
 ---
@@ -166,7 +166,6 @@ Not finished:
 
 - [ ] **The exporter.** Nothing in the app reads SecretBeans or writes QIF yet. Next: the QIF format specification (`docs/qif-format.md`) and writer, then the SecretBeans reader, the export rules, and the export window.
 - [ ] **No release yet.** See Install.
-- [ ] **Releasing from a private repository.** The release workflow waits for the owner's approval through the `release` environment's required reviewers. GitHub's documentation says that on GitHub Free, Pro and Team plans required reviewers are available only for public repositories, and environment secrets in private repositories need GitHub Pro or above ([GitHub Docs: deployments and environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments)). SecretMoney is private, so this must be settled before the first release.
 - [ ] `scripts/powershell/Install-SecretMoney.ps1` line 107 prints `ging Your Money files were downloaded or copied.`: the start of the message is missing.
 - [ ] `.github/Copilot-Instructions.md` still describes the SecretForecast step (§0).
 - [ ] The app's icons are SecretLead's.
@@ -234,7 +233,7 @@ The repository uses GitHub's **immutable OIDC subject claims** (**Settings → A
 
 ### One-time setup
 
-What signing needs, done once by the owner (not done yet; see §10 about the private repository):
+What signing needs, done once by the owner (not done yet):
 
 - **Azure:** the app registration `SecretMoney-GitHubActions-Signing`, with no certificate and no secret, and one federated credential:
   - issuer `https://token.actions.githubusercontent.com`
