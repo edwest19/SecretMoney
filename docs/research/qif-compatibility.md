@@ -62,6 +62,17 @@ The test QIF files were placed on the DOSBox-X D: drive and imported through MYM
 | Cleared status using C* | NOT visibly mapped |
 | Linked account transfer using tested L[Account] method | FAILED |
 | MYM native account transfer | PASS |
+<!-- AI-generated (Claude): rows below added for round 2, 2026-11-10 -->
+| Charge account using `!Type:CCard` (round 2) | PASS |
+| Payee length (round 2) | 25 characters; up to 40 copied into the memo as `Full Name:` |
+| Category length (round 2) | At least 20 kept (15 shown in the register); up to 31 copied into the memo as `*Category Full Name*:` |
+| Colon in a category (round 2) | One category name, not a subcategory |
+| Punctuation in a payee (round 2) | PASS |
+| New categories (round 2) | Created without asking |
+| Several entries in one file, lower-case categories (round 2) | PASS |
+| Same file imported twice (round 2) | MYM warned |
+| Transfer as an ordinary entry in both accounts, category `Transfer` (round 2) | PASS for balances; not linked |
+| Memo length (round 2) | 40 characters of the QIF `M` field kept |
 
 These results apply only to the specific behavior tested.
 
@@ -253,6 +264,118 @@ Possible future approaches include:
 - a future interoperability mechanism if safely demonstrated
 
 No approach should be marked supported until tested.
+
+<!-- AI-generated (Claude): this whole section was added for round 2, 2026-11-10 -->
+## Round 2 (2026-11-10)
+
+Round 2 tested what the SecretBeans-to-QIF exporter depends on. The test files and the
+questions asked are in `tests\qif\` and `tests\qif\README.md`. Edwin imported them into a
+throwaway MYM 12 data set on DESKTOP-URULEFH, into accounts `Chase` and `Savings` (from round 1)
+and a new account `Card`. His answers are recorded below as given; character counts were
+computed from the text he reported.
+
+### Charge account (`t1ccard.qif`)
+
+    !Type:CCard
+    D11/02/2026
+    T-31.31
+    PT1 CARD CHARGE TEST
+    ...
+    D11/05/2026
+    T200.00
+    PT1 CARD PAYMENT TEST
+
+- Credit-card account type: answer "No, Charge". MYM 12 has no type named credit card; it has
+  a Charge type.
+- `!Type:CCard` imported into `Card`.
+- `T-31.31` showed as a charge (amount owed went up); `T200.00` as a payment (amount owed went
+  down).
+- `t1bbank.qif` (the `!Type:Bank` fallback) was not needed and not tested.
+
+Result: PASS.
+
+### Field lengths (`t2long.qif`)
+
+The long values carry position markers: each 10-character block ends with its own position.
+
+| Field | Written | Kept by MYM | Characters |
+|---|---|---|---|
+| Payee | `PAYEE-0010` ... `PAYEE-0080` (80) | `PAYEE-0010PAYEE-0020PAYEE` | 25 |
+| Memo | `MEMO--0010` ... `MEMO--0080` (80) | `MEMO--0010MEMO--0020MEMO--0030MEMO--0040` | 40 |
+| Category | `CATEG-0010` ... `CATEG-0040` (40) | `CATEG-0010CATEG-0020` in the category list; `CATEG-0010CATEG` in the register | at least 20 |
+| Category with colon | `testfood:testgroceries` | one category; `testfood:testgr` in the register | 15 shown in the register |
+
+A re-check the same day, from screenshots of the entries (Edwin, DESKTOP-URULEFH), showed what
+MYM does with the part that does not fit:
+
+- **Long payee.** The memo of the -1.01 entry, opened with F2 (View/Edit Memo), holds two lines:
+
+      Full Name: PAYEE-0010PAYEE-0020PAYEE-0030PAYEE-0040
+      MEMO--0010MEMO--0020MEMO--0030MEMO--0040
+
+  MYM added a `Full Name:` line holding the first 40 characters of the payee, and kept the
+  first 40 characters of the QIF `M` field on the next line. The memo editor's title,
+  `Memo for: PAYEE-0010PAYEE-0020PAYEE`, has room for more and still shows 25 characters.
+- **Long category.** The register shows the -2.02 entry's category as `CATEG-0010CATEG`
+  (15 characters). Its memo holds:
+
+      *Category Full Name*:
+           CATEG-0010CATEG-0020CATEG-0030C
+
+  MYM added a `*Category Full Name*:` line holding the first 31 characters of the category.
+- **The category is not cut to 15.** A second screenshot, View or Edit Category Allocation for
+  the same entry, lists it as `CATEG-0010CATEG-0020` (20 characters). That list's category
+  column is 20 characters wide, as wide as `CATEG-0010CATEG-0020`, so MYM keeps at least 20
+  characters and the register's 15 is a display limit (Edwin: "I do not think it chopped off
+  category. only displays 15."). Whether MYM keeps more than 20 has not been established.
+  MYM's own categories in that list include `Compuserve/Prodigy` (18 characters).
+- The memo field on the transaction screen shows only the start of the memo's first line. The
+  first answer to the memo question, `PAYEE-0010PAYEE-0020PAYEE-0030PAYEE-004`, matches the
+  end of the 50 characters visible there: `Full Name: ` plus 39 characters.
+- Not checked: whether MYM adds these memo lines when the payee or category fits, and what it
+  did with the memo of the colon category entry.
+
+A colon is not a subcategory separator in MYM 12: `testfood:testgroceries` became one
+category, shown in the register as `testfood:testgr`, the same 15 characters as the long
+category.
+- `T2 PUNCT #*&/'.,-() TEST` showed exactly as written.
+- New categories were created without asking.
+
+### Several entries, and importing twice (`t3three.qif`)
+
+- All three entries imported. Categories `groceries`, `utilities` and `salary` stayed in lower
+  case. `Chase` went up by 1,359.50 (-52.40 - 88.10 + 1,500.00).
+- Importing the same file a second time: MYM warned. What happens if the import goes ahead
+  anyway was not recorded.
+
+### Transfer as an ordinary entry (`t4chk.qif`, `t4sav.qif`)
+
+    t4chk.qif into Chase:   T-75.00  LTransfer
+    t4sav.qif into Savings: T75.00   LTransfer
+
+- `Chase` went down 75.00 and `Savings` up 75.00. Category `Transfer` was accepted.
+- Category report: `Chase` shows `Transfer` on the income side as -$75; `Savings` shows
+  `Transfer` on the income side as $75. Across the two accounts that nets to 0.
+- MYM does not link the two entries; they are two independent register entries. Why MYM put
+  `Transfer` on the income side has not been established.
+
+Result: PASS for balances. The entries are not linked as MYM's own Transfer Money screen
+links them.
+
+### Consequences for the exporter
+
+- Charge accounts are written as `!Type:CCard`, with the card's own amount: a charge negative,
+  a payment positive. That is the sign the card account's posting already has in hledger.
+- The exporter cuts payees to 25 characters and categories to 20 itself, so every character
+  it writes is one MYM has been seen to keep, and it reports any two hledger categories that
+  become the same 20-character name. The register shows the first 15.
+- When a bank description is longer than 25 characters, the exporter writes its first 40
+  characters as the memo, so the longer text MYM would otherwise copy there is kept.
+- Category names carry no colon.
+- Transfers and card payments are written as an ordinary entry in both accounts, category
+  `Transfer`.
+- MYM warns when the same file is imported twice; the exporter still exports only dates after
+  the previous export.
 
 ## Account-Oriented QIF
 

@@ -1,0 +1,13 @@
+!Type:Bank
+D11/02/2026
+T-31.31
+PT1B CARD CHARGE TEST
+MCharge - should raise the amount owed
+Lgroceries
+^
+D11/05/2026
+T200.00
+PT1B CARD PAYMENT TEST
+MPayment - should lower the amount owed
+LTransfer
+^
