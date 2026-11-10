@@ -50,4 +50,22 @@ The long values carry position markers: each 10-character block ends with its ow
 
 ### Results
 
-Pending: Edwin's import on DESKTOP-URULEFH.
+Imported by Edwin on DESKTOP-URULEFH, 2026-11-10. Details in
+[docs/research/qif-compatibility.md](../../docs/research/qif-compatibility.md#round-2-2026-11-10).
+
+| # | Answer |
+|---|---|
+| 1 | No credit-card type; MYM has a Charge type |
+| 2 | Yes |
+| 3 | Yes |
+| 4 | Not needed |
+| 5 | `PAYEE-0010PAYEE-0020PAYEE`: 25 characters |
+| 6 | Pending re-check (reported text showed payee markers) |
+| 7 | `CATEG-0010CATEG`: 15 characters shown |
+| 8 | One category, `testfood:testgr` |
+| 9 | Yes |
+| 10 | Created without asking |
+| 11 | Yes, yes, yes |
+| 12 | Warned |
+| 13 | Yes |
+| 14 | Both accounts show `Transfer` on the income side: `Chase` -$75, `Savings` $75 |
