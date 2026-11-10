@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap rescap">
+
+  <!--
+    AI-GENERATED CODE: This file was written by Claude (Anthropic): SecretLead.UI's manifest
+    from edwest19/SecretLead, with SecretMoney's own package name, display name, description
+    and version.
+    Name (the package name) is a GUID made for SecretMoney; it must never change, or Windows
+    treats the app as a different one (checked by ReleaseRulesTests).
+    Publisher is the exact name the Artifact Signing certificate (account edwest19, profile
+    CodeSigning-Apps) signs as. It is case-sensitive ("S=ny") and checked by ReleaseRulesTests.
+    Version is Directory.Build.props' Version plus ".0".
+    SecretMoney is a project built with AI-generated code; see README.md.
+  -->
+  <Identity
+    Name="129542DC-DC08-4A7E-BD35-99912FB37B80"
+    Publisher="CN=Edwin West, O=Edwin West, L=Huntington, S=ny, C=US"
+    Version="0.1.0.0" />
+
+  <Properties>
+    <DisplayName>SecretMoney</DisplayName>
+    <PublisherDisplayName>Edwin West</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.26226.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.26226.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="x-generate"/>
+  </Resources>
+
+  <Applications>
+    <Application Id="App"
+      Executable="$targetnametoken$.exe"
+      EntryPoint="$targetentrypoint$">
+      <uap:VisualElements
+        DisplayName="SecretMoney"
+        Description="Turns SecretBeans ledgers into QIF files for Managing Your Money, entirely on your PC"
+        BackgroundColor="transparent"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
+        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <!-- Only runFullTrust: no network, device or AI capabilities (enforced by RepositoryRulesTests). -->
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

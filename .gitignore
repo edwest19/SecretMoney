@@ -11,6 +11,9 @@
 *.pif
 *.ico
 
+# AI-generated (Claude): SecretMoney's own app icon, copied from SecretLead, is not MYM software.
+!SecretMoney.UI/Assets/AppIcon.ico
+
 # MYM databases / user data
 *.dbs
 
@@ -48,3 +51,63 @@ obj/
 *.tmp
 *.bak
 *.log
+
+# AI-generated (Claude): the rest of this file is SecretLead's .NET / WinUI / MSIX list.
+## .NET / Visual Studio
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+artifacts/
+
+# Build logs
+[Ll]og/
+[Ll]ogs/
+*.binlog
+
+# Test results
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+
+# NuGet
+*.nupkg
+*.snupkg
+*.nuget.props
+*.nuget.targets
+project.lock.json
+
+# MSIX packaging output
+AppPackages/
+BundleArtifacts/
+*.msix
+*.msixupload
+*.appx
+*.appxbundle
+*.appxupload
+
+# Publish output
+publish/
+*.pubxml
+PublishScripts/
+
+# Code analysis and tooling
+_ReSharper*/
+*.DotSettings.user
+*.dotCover
+.idea/
+
+# Generated files
+Generated\ Files/
+*_wpftmp.csproj
+
+# WinUI/MSIX signing
+*.pfx
+*.cer
+*.appxsym
+
+# Windows OS files
+$RECYCLE.BIN/
