@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "SecretMoney (Package)": {
+      "commandName": "MsixPackage"
+    }
+  }
+}
