@@ -17,7 +17,9 @@ Copyright (c) 2026 Edwin West
 SecretMoney lets you keep your accounts in **Managing Your Money 12 for DOS** (MYM 12) on a modern Windows PC. It has two parts:
 
 1. **The MYM 12 environment** (§5): documentation and scripts for installing and running MYM 12 in DOSBox-X, with its working drives in OneDrive, and research into what MYM 12 does when it imports QIF files (§6).
-2. **The SecretMoney app** (`SecretMoney.UI`, `SecretMoney.Core`): a Windows app that will turn a [SecretBeans](https://github.com/edwest19/SecretBeans) ledger into QIF files MYM 12 can import. **In this version the app only opens a window saying that exporting isn't built yet.** It reads and writes no files (§2). The exporter is being built in steps: `SecretMoney.Core` already has the QIF writer (§6), which nothing in the app uses yet; §10 lists what isn't finished.
+2. **The SecretMoney app** (`SecretMoney.UI`, `SecretMoney.Core`): a Windows app that will turn a [SecretBeans](https://github.com/edwest19/SecretBeans) ledger into QIF files MYM 12 can import. **In this version the app only opens a window saying that exporting isn't built yet.** It reads and writes no files (§2). The exporter is being built in steps: `SecretMoney.Core` already has the QIF writer (§6) and the SecretBeans reader ([docs/secretbeans-input.md](docs/secretbeans-input.md)), which nothing in the app uses yet; §10 lists what isn't finished.
+
+SecretMoney reads a SecretBeans period through **hledger**, the program SecretBeans uses: `hledger print -x -O csv` prints each journal as CSV, and `SecretMoney.Core` reads that. A transfer or card payment that SecretBeans records once, in one account, becomes an entry in each of the two accounts. Only hledger 1.51.2's output has been tested.
 
 The data path:
 
@@ -85,6 +87,7 @@ The PowerShell scripts in `scripts/powershell` and the DOSBox-X script in `scrip
 - [ ] No file in the repository is a MYM program, disk image, archive or database (§7).
 - [ ] Every file in `tests/qif` is ASCII with CRLF line endings (`QifFixtureTests`).
 - [ ] `QifWriter` writes exactly what `docs/qif-format.md` version 1 specifies, and reproduces byte for byte the round-2 files MYM 12 imported (`QifWriterTests`, `QifTextTests`).
+- [ ] `HledgerCsvReader` reads hledger 1.51.2's real output for the test period in `tests/secretbeans`, and each account's entries include the transfers and card payments recorded by the other account (`SecretBeansReaderTests`, `HledgerCsvReaderTests`).
 - [ ] The version is the same in `Directory.Build.props`, `SecretMoney.UI/Package.appxmanifest` and `CHANGELOG.md` (`ReleaseRulesTests`).
 - [ ] The signing subject is the same in this README, `CLAUDE.md` and `release.yml` (`ReleaseRulesTests`).
 - [ ] Every workflow action is pinned to a full commit SHA (`ReleaseRulesTests`).
@@ -168,7 +171,7 @@ SecretMoney's own code and documentation are under the MIT License (see [LICENSE
 
 Not finished:
 
-- [ ] **The exporter.** The QIF writer is built (§6), but nothing in the app reads SecretBeans or writes a QIF file yet. Next: the SecretBeans reader, the export rules, and the export window.
+- [ ] **The exporter.** The QIF writer (§6) and the SecretBeans reader (§0) are built, but nothing in the app runs hledger, reads SecretBeans or writes a QIF file yet. Next: the export rules, then the export window.
 - [ ] **No release yet.** See Install.
 - [ ] `scripts/powershell/Install-SecretMoney.ps1` line 107 prints `ging Your Money files were downloaded or copied.`: the start of the message is missing.
 - [ ] `.github/Copilot-Instructions.md` still describes the SecretForecast step (§0).
