@@ -61,7 +61,7 @@ Imported by Edwin on DESKTOP-URULEFH, 2026-11-10. Details in
 | 4 | Not needed |
 | 5 | `PAYEE-0010PAYEE-0020PAYEE`: 25 characters |
 | 6 | 40 characters of the memo kept; MYM also added `Full Name:` with the first 40 characters of the payee |
-| 7 | `CATEG-0010CATEG`: 15 characters; MYM added `*Category Full Name*:` with the first 31 to the memo |
+| 7 | Register shows `CATEG-0010CATEG` (15); category list shows `CATEG-0010CATEG-0020` (20, the column's width); MYM added `*Category Full Name*:` with the first 31 to the memo |
 | 8 | One category, `testfood:testgr` |
 | 9 | Yes |
 | 10 | Created without asking |
