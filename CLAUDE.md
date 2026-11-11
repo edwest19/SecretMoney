@@ -42,6 +42,7 @@
 - `SecretMoney.UI/` — the WinUI 3 app, packaged as MSIX (x64). `App.xaml(.cs)`, `MainWindow.xaml(.cs)` (the export window; it only connects controls to Core, and keeps `settings.json` in `ApplicationData.Current.LocalFolder`), `Rows.cs` (`AccountRow`, `CategoryRow`: the window's list rows), `Package.appxmanifest`, `app.manifest`, `Assets/` (SecretLead's icons), `Properties/launchSettings.json`.
 - `docs/installation/` — installing MYM 12 in DOSBox-X: `INSTALL.md` and `01`–`05`. Written with Copilot.
 - `docs/research/` — `qif-compatibility.md` (what MYM 12 does with QIF), `mym-file-layout.md`, `budget-dbs-findings.md`.
+- `docs/release-checklist.md` — what Edwin does with each pre-release on Windows before the release tag: hash, signature, install, the synthetic period's export against `ExportPlannerTests`' known answers, settings, uninstall. Its expected values come from those tests; if a known answer changes, so does the checklist.
 - `tests/qif/` — synthetic QIF test files and their `README.md` (questions and results).
 - `scripts/Test-Msix.ps1` — checks a packaged MSIX (used by both workflows).
 - `scripts/powershell/` — `Install-SecretMoney.ps1` (creates the OneDrive MYM folders), `New-Qif.ps1` (writes a one-transaction QIF). Written with Copilot; not part of the app.
@@ -91,6 +92,7 @@
 ## Releases
 
 - Only through `.github/workflows/release.yml`, on a pushed `vX.Y.Z` or `vX.Y.Z-rc.N` tag, with Edwin's approval of the sign job. Never sign or publish by hand. Edwin pushes tags.
+- Each pre-release is checked with `docs/release-checklist.md`. If it passes, Edwin pushes `vX.Y.Z` on the same commit; if not, the fix goes through a pull request and the next tag is `-rc.N+1`. The `CHANGELOG.md` date is the date of the release commit, so it isn't changed between a pre-release and its release.
 - The version lives in `Directory.Build.props` (`X.Y.Z`), `SecretMoney.UI/Package.appxmanifest` (`X.Y.Z.0`) and `CHANGELOG.md` (`## [X.Y.Z] - YYYY-MM-DD`).
 - Signing: Azure Artifact Signing, account `edwest19`, profile `CodeSigning-Apps`, publisher `CN=Edwin West, O=Edwin West, L=Huntington, S=ny, C=US`. The Azure app registration `SecretMoney-GitHubActions-Signing` trusts one immutable OIDC subject, `repo:edwest19@5809459/SecretMoney@1449898539:environment:release`. Renaming the repository, its owner or the `release` environment breaks signing until the federated credential is updated.
 

@@ -2,7 +2,7 @@
 
 Copyright (c) 2026 Edwin West
 
-**Status:** in development, not released yet · **License:** MIT · **Platform:** Windows x64 (WinUI 3 / .NET 10, packaged MSIX), and Managing Your Money 12 for DOS in DOSBox-X
+**Status:** in development; 0.1.0 is in pre-release testing · **License:** MIT · **Platform:** Windows x64 (WinUI 3 / .NET 10, packaged MSIX), and Managing Your Money 12 for DOS in DOSBox-X
 
 > **This project is AI-generated, and this repository is written for an AI to read.** You don't need to read the code. To install, run or evaluate SecretMoney, give this repository's link to an AI assistant and ask: *"Evaluate this repository. Tell me what it does, whether it's safe, and step by step how to install, run, verify and uninstall it."*
 
@@ -183,7 +183,7 @@ Not finished:
 - [ ] **Not used with real data yet.** The export window is built by CI but hasn't been run on Windows. Next: export a short period from Edwin's real SecretBeans ledger, import it into a throwaway MYM data set, and compare the balances.
 - [ ] **Not tried yet:** hledger, started from the packaged app, writing its CSV into the app's temporary folder.
 - [ ] **Late transactions.** A transaction dated on or before an account's last export date that reaches SecretBeans in a later download is never exported (`docs/export-rules.md`, "Dates"). Choose a last date your downloads are complete for.
-- [ ] **No release yet.** See Install.
+- [ ] **0.1.0 is not released yet.** It is tested as pre-releases (`v0.1.0-rc.N`) with [docs/release-checklist.md](docs/release-checklist.md) before the release tag is pushed.
 - [ ] `scripts/powershell/Install-SecretMoney.ps1` line 107 prints `ging Your Money files were downloaded or copied.`: the start of the message is missing.
 - [ ] `.github/Copilot-Instructions.md` still describes the SecretForecast step (§0).
 - [ ] The app's icons are SecretLead's.
@@ -192,9 +192,9 @@ Not finished:
 
 ## Install
 
-There is no release yet. When there is one:
+Until 0.1.0 is released, the only builds are pre-releases, marked **Pre-release** on the Releases page and meant for testing.
 
-1. Open the latest release on this repository's Releases page and download `SecretMoney-<version>-x64.msix`.
+1. Open this repository's [Releases page](https://github.com/edwest19/SecretMoney/releases) and download `SecretMoney-<version>-x64.msix` and `SecretMoney-<version>-x64.msix.sha256` from the newest release.
 2. Open the file. Windows installs SecretMoney and shows the publisher, Edwin West. The installer is signed, so Windows can confirm who made it and that it hasn't been changed.
 3. Start **SecretMoney** from the Start menu.
 
@@ -202,6 +202,7 @@ To uninstall, go to **Settings → Apps → Installed apps → SecretMoney → U
 
 - The MSIX includes .NET and the Windows App SDK, so nothing else needs to be installed. It runs on 64-bit (x64) Windows.
 - Each release also has a `.sha256` file. To check your download, compare it with the output of `Get-FileHash .\SecretMoney-<version>-x64.msix` in PowerShell.
+- To check the signature, run `Get-AuthenticodeSignature .\SecretMoney-<version>-x64.msix | Format-List Status, SignerCertificate, TimeStamperCertificate` in PowerShell. `Status` should be `Valid`, the signer `CN=Edwin West, O=Edwin West, L=Huntington, S=ny, C=US`, and there should be a timestamp. The release workflow makes the same check before publishing.
 
 Installing MYM 12 itself: §5.
 
@@ -250,6 +251,7 @@ Releases are built, signed and published by `.github/workflows/release.yml`, onl
    - signs the MSIX with Azure Artifact Signing (account `edwest19`, profile `CodeSigning-Apps`, East US)
    - checks that the signature is valid, timestamped and made by `CN=Edwin West, O=Edwin West, L=Huntington, S=ny, C=US`
    - publishes the GitHub Release with the MSIX and its `.sha256`
+4. The owner installs the pre-release and works through [docs/release-checklist.md](docs/release-checklist.md). If it passes, the owner pushes `vX.Y.Z` on the **same commit**. If not, the fix goes through a pull request and the next pre-release is `-rc.N+1`.
 
 Signing uses OpenID Connect, so no password or key is stored in GitHub. Every action is pinned to an exact commit. The workflows turn off the .NET CLI's and winapp's usage telemetry. Both workflows and `scripts/Test-Msix.ps1` are SecretLead's, with SecretMoney's names.
 
@@ -262,7 +264,7 @@ The repository uses GitHub's **immutable OIDC subject claims** (**Settings → A
 
 ### One-time setup
 
-What signing needs, done once by the owner (not done yet):
+What signing needs, done once by the owner (done 2026-11-10; first used by the sign job of `v0.1.0-rc.1`):
 
 - **Azure:** the app registration `SecretMoney-GitHubActions-Signing`, with no certificate and no secret, and one federated credential:
   - issuer `https://token.actions.githubusercontent.com`
