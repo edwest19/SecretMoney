@@ -2,13 +2,14 @@
 
 > AI-generated: this file was written by Claude (Anthropic). SecretMoney is a project built with AI-generated code; see [README.md](README.md).
 
-Every release has a heading `## [X.Y.Z] - YYYY-MM-DD`; the release workflow refuses a tag without one and uses the entry as the release notes. The date on the entry below is updated when 0.1.0 is released.
+Every release has a heading `## [X.Y.Z] - YYYY-MM-DD`; the release workflow refuses a tag without one and uses the entry as the release notes.
 
-## [0.1.0] - 2026-11-10
+## [0.1.0] - 2026-11-11
 
-Not released yet.
+The first release: SecretMoney's export window turns a SecretBeans period into QIF files for Managing Your Money 12 for DOS. It has been tested with synthetic data only; see README §10.
 
 ### New
+- **The pre-release checklist.** `docs/release-checklist.md` is what the owner does with each pre-release before the release tag is pushed on the same commit: check the download's hash and signature, install it, export the synthetic period in `tests/secretbeans` and compare the files and balances with the known answers in `ExportPlannerTests`, check what the app keeps, and uninstall.
 - **The export window.** Choose where `hledger.exe`, the SecretBeans ledger folder and the QIF folder are; read the newest period (`hledger check`, then `hledger print` of `generated.journal` and `opening.journal`); tick the accounts and change their file names and types; change category names; choose the dates; **Check** shows anything that stops the export, or each file with its balances; **Write QIF files** writes them, asks before replacing a file, and records each account's last export date, which never moves back. The settings are kept in `settings.json` in the package data folder. In `SecretMoney.Core`: `SecretBeansPeriod`, `HledgerRunner`, `ExportFiles`, the account and category choices, and `ExportSettings.AfterExport`, tested by `ExportWorkflowTests`. `RepositoryRulesTests` now also checks that only `HledgerRunner` starts a program.
 - **The settings file gained `ledgerFolder` and `qifFolder`** (still version 1; no settings file had been written yet).
 - **The export rules.** `docs/export-rules.md` says how a SecretBeans period becomes one QIF file per MYM account: accounts found from SecretBeans' block lines; file names from the SecretBeans names (8 characters, for DOS); entries from your first start date, then from the day after each account's last export; payee 25 characters, a longer description's first 40 in the memo; transfers and card payments under `Transfer` in both accounts; other categories from the hledger account's last part, or a name you choose; the balance before and after for each account. Uncategorised entries (`expenses:review`, `unknown`), equity, splits, other currencies and category clashes stop the export. `ExportPlanner` applies them; known-answer tests on the synthetic period.
