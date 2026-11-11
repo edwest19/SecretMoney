@@ -4,6 +4,7 @@
 // SecretMoney is a project built with AI-generated code; see README.md.
 // ============================================================================
 using System.Text.RegularExpressions;
+using SecretMoney.Ledger;
 using SecretMoney.Qif;
 
 namespace SecretMoney.Export;
@@ -76,8 +77,59 @@ public static partial class ExportRules
             .DistinctBy(a => a.HledgerAccount, StringComparer.Ordinal)
             .ToArray();
 
+    /// <summary>
+    /// The accounts the window offers: those found in <c>generated.journal</c>, in its order, each as
+    /// already chosen in the settings if it is there; then any chosen account no longer found. With no
+    /// accounts chosen yet, every account found is offered as chosen.
+    /// </summary>
+    public static IReadOnlyList<AccountChoice> AccountChoices(IReadOnlyList<MymAccount> found, IReadOnlyList<MymAccount> chosen)
+    {
+        var byAccount = chosen.ToDictionary(a => a.HledgerAccount, StringComparer.Ordinal);
+        var foundNames = found.Select(f => f.HledgerAccount).ToHashSet(StringComparer.Ordinal);
+        return found
+            .Select(f => byAccount.TryGetValue(f.HledgerAccount, out var c) ? new AccountChoice(c, true) : new AccountChoice(f, chosen.Count == 0))
+            .Concat(chosen.Where(c => !foundNames.Contains(c.HledgerAccount)).Select(c => new AccountChoice(c, true)))
+            .ToArray();
+    }
+
+    /// <summary>
+    /// The categories the chosen accounts' entries use, in ordinal order of the hledger account: every
+    /// other account of a one-other-posting entry that isn't a transfer, uncategorised or equity, with its
+    /// default name and its name now (the chosen one, or the default).
+    /// </summary>
+    public static IReadOnlyList<CategoryChoice> CategoryChoices(IReadOnlyList<LedgerTransaction> generated, ExportSettings settings)
+    {
+        var accounts = new SortedSet<string>(StringComparer.Ordinal);
+        foreach (var account in settings.Accounts)
+        {
+            foreach (var entry in LedgerAccounts.EntriesFor(generated, account.HledgerAccount).Where(e => e.Others.Count == 1))
+            {
+                var other = entry.Others[0].Account;
+                if (!IsTransferAccount(other) && !IsUncategorised(other, settings.ReviewAccount) && !other.StartsWith("equity:", StringComparison.Ordinal))
+                {
+                    accounts.Add(other);
+                }
+            }
+        }
+
+        return accounts
+            .Select(a => new CategoryChoice(a, DefaultCategory(a), settings.Categories.TryGetValue(a, out var name) ? name : DefaultCategory(a)))
+            .ToArray();
+    }
+
+    /// <summary>The names to keep in the settings: only those that differ from the default.</summary>
+    public static IReadOnlyDictionary<string, string> ChosenCategories(IEnumerable<CategoryChoice> choices) =>
+        choices.Where(c => !string.Equals(c.Name, c.DefaultName, StringComparison.Ordinal))
+            .ToDictionary(c => c.HledgerAccount, c => c.Name, StringComparer.Ordinal);
+
     private static bool IsFileStemCharacter(char c) => c is (>= 'A' and <= 'Z') or (>= '0' and <= '9') or '_' or '-';
 
     [GeneratedRegex(@"^;\s*----\s*(?<name>\S+)\s*\((?<account>.+)\)\s*----\s*$", RegexOptions.Multiline)]
     private static partial Regex BlockMarker();
 }
+
+/// <summary>An account offered for export, and whether it is chosen.</summary>
+public sealed record AccountChoice(MymAccount Account, bool Chosen);
+
+/// <summary>A category the export uses: the hledger account, its default MYM name, and its name now.</summary>
+public sealed record CategoryChoice(string HledgerAccount, string DefaultName, string Name);

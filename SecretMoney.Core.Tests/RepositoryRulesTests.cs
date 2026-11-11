@@ -81,6 +81,22 @@ public sealed class RepositoryRulesTests
     }
 
     [TestMethod]
+    public void AppCode_StartsNoProgramButHledger()
+    {
+        // README "Safety": the only other program the app runs is the hledger.exe the user chose, and
+        // only HledgerRunner runs it, with `check` and `print` (docs/secretbeans-input.md, "Running hledger").
+        var starts = new Regex(@"\bProcess(StartInfo)?\b|\bSystem\.Diagnostics\b|\bLauncher\b|\bShellExecute\b|\bCreateProcess\b");
+        var root = RepoRoot();
+
+        var found = AppSourceFiles(root, ".cs", ".xaml")
+            .Where(file => starts.IsMatch(File.ReadAllText(file)))
+            .Select(file => Path.GetRelativePath(root, file).Replace('\\', '/'))
+            .ToArray();
+
+        CollectionAssert.AreEqual(new[] { "SecretMoney.Core/Ledger/HledgerRunner.cs" }, found);
+    }
+
+    [TestMethod]
     public void AppManifest_DeclaresOnlyRunFullTrust()
     {
         // No network, device or AI capabilities. runFullTrust is required for a WinUI 3 desktop app

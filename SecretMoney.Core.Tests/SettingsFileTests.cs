@@ -23,6 +23,8 @@ public sealed class SettingsFileTests
         "{\n" +
         "  \"formatVersion\": 1,\n" +
         "  \"hledgerPath\": \"C:\\\\Tools\\\\hledger.exe\",\n" +
+        "  \"ledgerFolder\": \"C:\\\\Ledger\",\n" +
+        "  \"qifFolder\": \"C:\\\\MYM\\\\DriveD\",\n" +
         "  \"reviewAccount\": \"expenses:review\",\n" +
         "  \"accounts\": [\n" +
         "    {\n" +
@@ -48,6 +50,8 @@ public sealed class SettingsFileTests
 
     private static readonly ExportSettings ExampleSettings = new(
         @"C:\Tools\hledger.exe",
+        @"C:\Ledger",
+        @"C:\MYM\DriveD",
         "expenses:review",
         [
             new MymAccount("assets:bank:checking", "checking", "CHECKING", QifAccountType.Bank, new DateOnly(2026, 7, 31)),
@@ -61,7 +65,7 @@ public sealed class SettingsFileTests
         var text = SettingsFile.Write(ExampleSettings);
 
         Assert.AreEqual(Example, text);
-        Assert.HasCount(607, Encoding.UTF8.GetBytes(text));
+        Assert.HasCount(673, Encoding.UTF8.GetBytes(text));
     }
 
     [TestMethod]
@@ -81,6 +85,8 @@ public sealed class SettingsFileTests
         var settings = SettingsFile.Read(Example);
 
         Assert.AreEqual(@"C:\Tools\hledger.exe", settings.HledgerPath);
+        Assert.AreEqual(@"C:\Ledger", settings.LedgerFolder);
+        Assert.AreEqual(@"C:\MYM\DriveD", settings.QifFolder);
         Assert.AreEqual("expenses:review", settings.ReviewAccount);
         CollectionAssert.AreEqual(ExampleSettings.Accounts.ToArray(), settings.Accounts.ToArray());
         Assert.AreEqual("Gas & electric", settings.Categories["expenses:utilities:gas"]);
@@ -90,7 +96,7 @@ public sealed class SettingsFileTests
     [TestMethod]
     public void EmptySettings_KnownAnswer()
     {
-        const string empty = "{\n  \"formatVersion\": 1,\n  \"hledgerPath\": null,\n  \"reviewAccount\": \"expenses:review\",\n  \"accounts\": [],\n  \"categories\": {}\n}\n";
+        const string empty = "{\n  \"formatVersion\": 1,\n  \"hledgerPath\": null,\n  \"ledgerFolder\": null,\n  \"qifFolder\": null,\n  \"reviewAccount\": \"expenses:review\",\n  \"accounts\": [],\n  \"categories\": {}\n}\n";
 
         Assert.AreEqual(empty, SettingsFile.Write(ExportSettings.Empty));
         Assert.HasCount(0, SettingsFile.Read(empty).Accounts);

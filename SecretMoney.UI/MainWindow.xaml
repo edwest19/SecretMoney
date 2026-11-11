@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
-  AI-GENERATED CODE: This file was written by Claude (Anthropic), following
-  SecretLead.UI/MainWindow.xaml. A placeholder until the export window is built (README "Status").
+  AI-GENERATED CODE: This file was written by Claude (Anthropic). The export window
+  (README "Using SecretMoney"): every rule it applies is in SecretMoney.Core.
   SecretMoney is a project built with AI-generated code; see README.md.
 -->
 <Window
@@ -29,12 +29,100 @@
             </TitleBar.IconSource>
         </TitleBar>
 
-        <StackPanel Grid.Row="1" Margin="32" Spacing="12" MaxWidth="640" HorizontalAlignment="Left">
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="SecretMoney" />
-            <TextBlock TextWrapping="Wrap"
-                       Text="SecretMoney will turn a SecretBeans ledger into QIF files for Managing Your Money 12." />
-            <TextBlock TextWrapping="Wrap"
-                       Text="This build only sets up the app. Exporting is not built yet." />
-        </StackPanel>
+        <ScrollViewer Grid.Row="1">
+            <StackPanel Margin="32,8,32,32" Spacing="12" MaxWidth="960" HorizontalAlignment="Left">
+                <TextBlock TextWrapping="Wrap"
+                           Text="Turns the newest SecretBeans period into one QIF file per Managing Your Money account. Nothing is written until step 6." />
+
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="1. Where things are" />
+                <Grid ColumnSpacing="12" RowSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Text="hledger.exe" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" x:Name="HledgerPathText" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <Button Grid.Row="0" Grid.Column="2" Content="Choose…" Click="ChooseHledger_Click" />
+                    <TextBlock Grid.Row="1" VerticalAlignment="Center" Text="SecretBeans ledger folder" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" x:Name="LedgerFolderText" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <Button Grid.Row="1" Grid.Column="2" Content="Choose…" Click="ChooseLedgerFolder_Click" />
+                    <TextBlock Grid.Row="2" VerticalAlignment="Center" Text="QIF folder (MYM's D: drive)" />
+                    <TextBlock Grid.Row="2" Grid.Column="1" x:Name="QifFolderText" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <Button Grid.Row="2" Grid.Column="2" Content="Choose…" Click="ChooseQifFolder_Click" />
+                </Grid>
+
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="2. Read SecretBeans" />
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <Button x:Name="ReadButton" Content="Read the newest period" Click="Read_Click" />
+                    <TextBlock x:Name="PeriodText" VerticalAlignment="Center" TextWrapping="Wrap" />
+                </StackPanel>
+
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="3. Accounts" />
+                <TextBlock TextWrapping="Wrap" Opacity="0.8"
+                           Text="Tick the accounts to export. File names are up to 8 of A-Z, 0-9, _ and -. Unticking an account forgets its last export date." />
+                <ItemsControl x:Name="AccountList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="local:AccountRow">
+                            <Grid ColumnSpacing="12" Padding="0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="280" />
+                                    <ColumnDefinition Width="120" />
+                                    <ColumnDefinition Width="120" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <CheckBox IsChecked="{x:Bind Chosen, Mode=TwoWay}" MinWidth="0" />
+                                <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{x:Bind HledgerAccount}" TextTrimming="CharacterEllipsis" />
+                                <TextBox Grid.Column="2" MaxLength="8" Text="{x:Bind FileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <ComboBox Grid.Column="3" SelectedIndex="{x:Bind TypeIndex, Mode=TwoWay}">
+                                    <ComboBoxItem Content="Bank" />
+                                    <ComboBoxItem Content="Charge" />
+                                </ComboBox>
+                                <TextBlock Grid.Column="4" VerticalAlignment="Center" Opacity="0.8" Text="{x:Bind LastExportedText}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="4. Category names" />
+                <TextBlock TextWrapping="Wrap" Opacity="0.8"
+                           Text="The MYM category for each SecretBeans category: up to 20 characters, no colon. Transfers between your accounts are always Transfer." />
+                <ItemsControl x:Name="CategoryList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="local:CategoryRow">
+                            <Grid ColumnSpacing="12" Padding="0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="320" />
+                                    <ColumnDefinition Width="220" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock VerticalAlignment="Center" Text="{x:Bind HledgerAccount}" TextTrimming="CharacterEllipsis" />
+                                <TextBox Grid.Column="1" MaxLength="20" Text="{x:Bind Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="5. Dates" />
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <CalendarDatePicker x:Name="StartDate" Header="First export starts on" />
+                    <CalendarDatePicker x:Name="EndDate" Header="Export up to and including" />
+                </StackPanel>
+                <TextBlock TextWrapping="Wrap" Opacity="0.8"
+                           Text="The start date is used only for accounts never exported; the others start the day after their last export. Choose a last date your downloads are complete for: anything dated on or before it that arrives later is not exported." />
+
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="6. Check and write" />
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <Button x:Name="CheckButton" Content="Check" Click="Check_Click" />
+                    <Button x:Name="WriteButton" Content="Write QIF files" Style="{StaticResource AccentButtonStyle}" IsEnabled="False" Click="Write_Click" />
+                </StackPanel>
+                <TextBlock x:Name="ResultText" TextWrapping="Wrap" IsTextSelectionEnabled="True" FontFamily="Consolas" />
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Window>

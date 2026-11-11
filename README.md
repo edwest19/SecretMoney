@@ -17,7 +17,7 @@ Copyright (c) 2026 Edwin West
 SecretMoney lets you keep your accounts in **Managing Your Money 12 for DOS** (MYM 12) on a modern Windows PC. It has two parts:
 
 1. **The MYM 12 environment** (§5): documentation and scripts for installing and running MYM 12 in DOSBox-X, with its working drives in OneDrive, and research into what MYM 12 does when it imports QIF files (§6).
-2. **The SecretMoney app** (`SecretMoney.UI`, `SecretMoney.Core`): a Windows app that will turn a [SecretBeans](https://github.com/edwest19/SecretBeans) ledger into QIF files MYM 12 can import. **In this version the app only opens a window saying that exporting isn't built yet.** It reads and writes no files (§2). The exporter is being built in steps: `SecretMoney.Core` already has the QIF writer (§6), the SecretBeans reader ([docs/secretbeans-input.md](docs/secretbeans-input.md)) and the export rules ([docs/export-rules.md](docs/export-rules.md)), which nothing in the app uses yet; §10 lists what isn't finished.
+2. **The SecretMoney app** (`SecretMoney.UI`, `SecretMoney.Core`): a Windows app that turns the newest period of a [SecretBeans](https://github.com/edwest19/SecretBeans) ledger into QIF files MYM 12 can import, one file per MYM account. It has one window ("Using SecretMoney", below). Every rule it applies is in `SecretMoney.Core`: reading SecretBeans ([docs/secretbeans-input.md](docs/secretbeans-input.md)), the export rules ([docs/export-rules.md](docs/export-rules.md)) and the QIF it writes (§6). It has not been used with real data yet (§10).
 
 SecretMoney reads a SecretBeans period through **hledger**, the program SecretBeans uses: `hledger print -x -O csv` prints each journal as CSV, and `SecretMoney.Core` reads that. A transfer or card payment that SecretBeans records once, in one account, becomes an entry in each of the two accounts. Only hledger 1.51.2's output has been tested.
 
@@ -29,12 +29,12 @@ The data path:
     SecretBeans        builds an hledger journal, and catches transfers and card
         |              payments counted twice
         v
-    SecretMoney        will write one QIF file per MYM account (not built yet)
+    SecretMoney        writes one QIF file per MYM account
         |
         v
     MYM 12             imports each file from DOSBox-X's D: drive
 
-SecretBeans keeps its transfer and card-payment detection; SecretMoney will not detect them again. Earlier documents in this repository put a SecretForecast step between SecretBeans and SecretMoney; since 2026-11-10 SecretMoney reads SecretBeans directly.
+SecretBeans keeps its transfer and card-payment detection; SecretMoney does not detect them again. Earlier documents in this repository put a SecretForecast step between SecretBeans and SecretMoney; since 2026-11-10 SecretMoney reads SecretBeans directly.
 
 SecretMoney is **not** a distribution of Managing Your Money. You supply your own MYM installation media (§7).
 
@@ -46,6 +46,7 @@ SecretMoney is **not** a distribution of Managing Your Money. You supply your ow
 - **Microsoft packages only:** `Microsoft.WindowsAppSDK`, `Microsoft.Windows.SDK.BuildTools`, `Microsoft.Windows.SDK.BuildTools.WinApp` and, for tests only, `MSTest`. No third-party packages.
 - **No network calls.** No code path in the app can open a connection: no HTTP, sockets, telemetry or update checks.
 - **One permission:** the MSIX asks only for `runFullTrust`.
+- **One other program:** the app runs only the `hledger.exe` you choose, and only to check and print the period's journals ([docs/secretbeans-input.md](docs/secretbeans-input.md), "Running hledger").
 - **The app's own data goes only in its MSIX package data folder** (`ApplicationData.Current.LocalFolder`), never in a path the app builds itself.
 - **No Managing Your Money files and no personal financial data in this repository** (§7). Test data is synthetic.
 - **MYM behaviour is claimed only from observed tests** (§6), never inferred from Quicken or other software.
@@ -55,9 +56,11 @@ SecretMoney is **not** a distribution of Managing Your Money. You supply your ow
 
 ## 2. What SecretMoney stores, and where
 
-- **The app, this version:** nothing. It reads no file and writes no file. Its package data folder, `%LOCALAPPDATA%\Packages\<PackageFamilyName>\LocalState`, stays empty.
-- **Uninstalling** deletes that folder, which is empty in this version.
-- **When the export window is built**, the app will keep one settings file there ([docs/settings-format.md](docs/settings-format.md)): which accounts to export, their file names and types, chosen category names, the last date exported for each account, and where `hledger.exe` is. Uninstalling will delete it, by Edwin's choice; there is no Backup for it.
+- **Settings:** the app keeps one file, `settings.json`, in its package data folder (`ApplicationData.Current.LocalFolder`, which is `%LOCALAPPDATA%\Packages\<PackageFamilyName>\LocalState`), as [docs/settings-format.md](docs/settings-format.md) specifies: where `hledger.exe`, the SecretBeans ledger folder and the QIF folder are; which accounts to export, with their file names, types and the last date exported; and the category names you chose. It holds no amounts or transactions. It is saved when you choose a folder, press **Check**, or write the files.
+- **hledger's output:** while reading a period, hledger writes each journal as CSV into the app's temporary folder (`ApplicationData.Current.TemporaryFolder`); the app reads the file and deletes it at once.
+- **What it reads:** the newest SecretBeans period's `journal` folder, through hledger, and `generated.journal` itself for its account lines. It changes nothing in the ledger folder.
+- **What it writes:** QIF files, only into the QIF folder you chose, only when you press **Write QIF files**. A file of the same name is replaced after the window asks.
+- **Uninstalling** deletes the package data folder and the settings with it, by Edwin's choice; there is no Backup. QIF files already written stay where they are.
 - **The MYM 12 environment** (§5) keeps MYM's program and your MYM data in `OneDrive\MYM\DriveC` and QIF files to import in `OneDrive\MYM\DriveD`, outside this repository and outside the app.
 
 ---
@@ -67,6 +70,7 @@ SecretMoney is **not** a distribution of Managing Your Money. You supply your ow
 | Claim | Checked by |
 |---|---|
 | The app's code uses no network API | `RepositoryRulesTests.AppCodeHasNoNetworkAccess` |
+| The app starts no program except the `hledger.exe` you choose, and only `HledgerRunner` starts it | `RepositoryRulesTests.AppCode_StartsNoProgramButHledger`, `ExportWorkflowTests.HledgerArguments_AreTheRecordedCommands` |
 | Only Microsoft packages are referenced | `RepositoryRulesTests.OnlyAllowedMicrosoftPackagesAreReferenced` |
 | The MSIX asks only for `runFullTrust` | `RepositoryRulesTests.AppManifest_DeclaresOnlyRunFullTrust`, and `scripts/Test-Msix.ps1` on every packaged MSIX |
 | The app builds no path under AppData | `RepositoryRulesTests.AppCode_BuildsNoPathUnderAppDataItself` |
@@ -84,13 +88,15 @@ The PowerShell scripts in `scripts/powershell` and the DOSBox-X script in `scrip
 - [ ] No `.cs` or `.xaml` file in `SecretMoney.Core` or `SecretMoney.UI` uses a network API.
 - [ ] Every `PackageReference` is one of the four packages in §1.
 - [ ] `SecretMoney.UI/Package.appxmanifest` declares only `runFullTrust`.
-- [ ] The app reads and writes no files (§2): `SecretMoney.UI/App.xaml.cs` and `MainWindow.xaml.cs` only open the window, and `SecretMoney.Core`'s QIF writer returns text and bytes without opening any file.
+- [ ] The app reads and writes only what §2 lists: `settings.json` in `ApplicationData.Current.LocalFolder` and hledger's CSV in `ApplicationData.Current.TemporaryFolder` (`SecretMoney.UI/MainWindow.xaml.cs`, `HledgerRunner`), and QIF files in the folder chosen (`ExportFiles`).
+- [ ] Only `HledgerRunner` starts a program, and only `hledger check` and `hledger print` (`RepositoryRulesTests`, `ExportWorkflowTests`).
 - [ ] No file in the repository is a MYM program, disk image, archive or database (§7).
 - [ ] Every file in `tests/qif` is ASCII with CRLF line endings (`QifFixtureTests`).
 - [ ] `QifWriter` writes exactly what `docs/qif-format.md` version 1 specifies, and reproduces byte for byte the round-2 files MYM 12 imported (`QifWriterTests`, `QifTextTests`).
 - [ ] `HledgerCsvReader` reads hledger 1.51.2's real output for the test period in `tests/secretbeans`, and each account's entries include the transfers and card payments recorded by the other account (`SecretBeansReaderTests`, `HledgerCsvReaderTests`).
 - [ ] `ExportPlanner` follows `docs/export-rules.md`: for the test period it writes the known-answer files and balances, and it stops the export for each rule listed there (`ExportPlannerTests`, `ExportRulesTests`).
 - [ ] `SettingsFile` writes exactly what `docs/settings-format.md` version 1 specifies and refuses anything else (`SettingsFileTests`).
+- [ ] The window's steps behave as the docs say: the newest period is found as SecretBeans finds it; the accounts and categories offered; the files written, and only when nothing stops the export; the last export dates, which never move back (`ExportWorkflowTests`).
 - [ ] The version is the same in `Directory.Build.props`, `SecretMoney.UI/Package.appxmanifest` and `CHANGELOG.md` (`ReleaseRulesTests`).
 - [ ] The signing subject is the same in this README, `CLAUDE.md` and `release.yml` (`ReleaseRulesTests`).
 - [ ] Every workflow action is pinned to a full commit SHA (`ReleaseRulesTests`).
@@ -174,7 +180,9 @@ SecretMoney's own code and documentation are under the MIT License (see [LICENSE
 
 Not finished:
 
-- [ ] **The exporter.** The QIF writer (§6), the SecretBeans reader (§0) and the export rules (`docs/export-rules.md`) are built, but nothing in the app runs hledger, keeps settings or writes a QIF file yet. Next: the export window.
+- [ ] **Not used with real data yet.** The export window is built by CI but hasn't been run on Windows. Next: export a short period from Edwin's real SecretBeans ledger, import it into a throwaway MYM data set, and compare the balances.
+- [ ] **Not tried yet:** hledger, started from the packaged app, writing its CSV into the app's temporary folder.
+- [ ] **Late transactions.** A transaction dated on or before an account's last export date that reaches SecretBeans in a later download is never exported (`docs/export-rules.md`, "Dates"). Choose a last date your downloads are complete for.
 - [ ] **No release yet.** See Install.
 - [ ] `scripts/powershell/Install-SecretMoney.ps1` line 107 prints `ging Your Money files were downloaded or copied.`: the start of the message is missing.
 - [ ] `.github/Copilot-Instructions.md` still describes the SecretForecast step (§0).
@@ -196,6 +204,17 @@ To uninstall, go to **Settings → Apps → Installed apps → SecretMoney → U
 - Each release also has a `.sha256` file. To check your download, compare it with the output of `Get-FileHash .\SecretMoney-<version>-x64.msix` in PowerShell.
 
 Installing MYM 12 itself: §5.
+
+## Using SecretMoney
+
+1. In SecretBeans, build the period until its report shows nothing uncategorised or awaiting review.
+2. Start SecretMoney. In **1. Where things are**, choose `hledger.exe`, the SecretBeans ledger folder (the one holding the period folders) and the QIF folder (`OneDrive\MYM\DriveD`, MYM's D: drive). SecretMoney remembers them.
+3. **2. Read SecretBeans** runs `hledger check` on the newest period, then reads `generated.journal` and `opening.journal` through hledger, and shows the period's name and how many transactions it has.
+4. **3. Accounts:** tick the accounts to export, and change a file name (up to 8 characters) or type (Bank or Charge) if you need to.
+5. **4. Category names:** change any MYM category name (up to 20 characters, no colon). Transfers between your accounts are always `Transfer`.
+6. **5. Dates:** the first start date is used only for accounts never exported; it starts as the period's first transaction date. The last date starts as the period's last transaction date.
+7. **6. Check and write:** **Check** lists anything that stops the export, or each file with its entries, dates and the balance before and after. **Write QIF files** writes them, asks before replacing a file, and records each account's last export date.
+8. In MYM: create an account never exported before with the **balance before** as its opening balance, import each file into its account from D:, and check that MYM shows the **balance after**.
 
 ## Building and testing
 

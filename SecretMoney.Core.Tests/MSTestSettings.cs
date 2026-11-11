@@ -4,5 +4,5 @@
 // SecretMoney is a project built with AI-generated code; see README.md.
 // ============================================================================
 
-// Tests only read the repository, so they can safely run in parallel.
+// Tests read the repository and write only to their own temporary folders, so they can safely run in parallel.
 [assembly: Parallelize(Scope = ExecutionScope.MethodLevel)]
