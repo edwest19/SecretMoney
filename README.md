@@ -180,8 +180,7 @@ SecretMoney's own code and documentation are under the MIT License (see [LICENSE
 
 Not finished:
 
-- [ ] **Not used with real data yet.** The export window is built by CI but hasn't been run on Windows. Next: export a short period from Edwin's real SecretBeans ledger, import it into a throwaway MYM data set, and compare the balances.
-- [ ] **Not tried yet:** hledger, started from the packaged app, writing its CSV into the app's temporary folder.
+- [ ] **Not used with real data yet.** 0.1.0-rc.1 passed [docs/release-checklist.md](docs/release-checklist.md) on Edwin's PC on 2026-11-11, with the synthetic period only; that included hledger, started from the packaged app, writing its CSV into the app's temporary folder. Next: export a short period from Edwin's real SecretBeans ledger, import it into a throwaway MYM data set, and compare the balances.
 - [ ] **Late transactions.** A transaction dated on or before an account's last export date that reaches SecretBeans in a later download is never exported (`docs/export-rules.md`, "Dates"). Choose a last date your downloads are complete for.
 - [ ] **0.1.0 is not released yet.** It is tested as pre-releases (`v0.1.0-rc.N`) with [docs/release-checklist.md](docs/release-checklist.md) before the release tag is pushed.
 - [ ] `scripts/powershell/Install-SecretMoney.ps1` line 107 prints `ging Your Money files were downloaded or copied.`: the start of the message is missing.

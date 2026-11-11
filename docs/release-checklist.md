@@ -70,11 +70,13 @@ The commands are Windows PowerShell, one line each, for 0.1.0-rc.1. For a later 
 
   It prints the two folders' paths, to paste into the folder pickers.
 
-- [ ] Find `hledger.exe` if you don't know where it is:
+- [ ] Find `hledger.exe`. It needn't be on the PATH, and on Edwin's PC it isn't (`docs/secretbeans-input.md`): the window asks for the file. This searches the user's folder, OneDrive included, and Program Files, and can take a minute:
 
   ```powershell
-  (Get-Command hledger).Source
+  Get-ChildItem -Path $env:USERPROFILE, $env:ProgramFiles -Filter hledger.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName
   ```
+
+  In the picker, paste the path into the **File name** box: folders under AppData are hidden.
 
 - [ ] **1. Where things are:** choose `hledger.exe`, the ledger folder (`...\SecretMoney-rc\ledger`) and the QIF folder (`...\SecretMoney-rc\qif`). Each path shows in the window.
 - [ ] **2. Read the newest period:** shows `Period: 2026-07 Test` and "Read 9 transactions, 2026-07-03 to 2026-07-31. hledger check passed." This is the first run of hledger started from the packaged app.

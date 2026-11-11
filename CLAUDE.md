@@ -98,7 +98,7 @@
 
 ## Known gaps
 
-- The export window has been built by CI but not run on Windows, and SecretMoney hasn't been used with real data (README §10). Not tried: hledger, started from the packaged app, writing its CSV into `ApplicationData.Current.TemporaryFolder`.
+- SecretMoney hasn't been used with real data (README §10). 0.1.0-rc.1 passed `docs/release-checklist.md` on Edwin's PC on 2026-11-11 with the synthetic period, including hledger, started from the packaged app, writing its CSV into `ApplicationData.Current.TemporaryFolder`.
 - A transaction dated on or before an account's `lastExported` that reaches SecretBeans in a later download is never exported (`docs/export-rules.md`, "Dates").
 - No Backup for the settings file: Edwin chose that uninstalling deletes everything (2026-11-10).
 - `scripts/powershell/Install-SecretMoney.ps1` line 107 has a truncated message.
