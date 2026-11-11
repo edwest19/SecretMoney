@@ -2,7 +2,9 @@
 
 > Written by Claude (Anthropic) with Edwin West, 2026-11-10, from the code in `SecretMoney.Core/Export/SettingsFile.cs`. SecretMoney is a project built with AI-generated code; see [README.md](../README.md).
 
-SecretMoney keeps everything it remembers in one settings file in its MSIX package data folder (README §2). **Uninstalling SecretMoney deletes it** (Edwin's choice, 2026-11-10). `SettingsFile` reads and writes it; the known-answer tests in `SecretMoney.Core.Tests/SettingsFileTests.cs` lock it. **Changing it needs the owner's approval**, a new version of this document, and a plan for settings files already on disk. Never change a known-answer test's expected values to make it pass.
+SecretMoney keeps everything it remembers in one settings file, `settings.json`, in its MSIX package data folder (README §2). **Uninstalling SecretMoney deletes it** (Edwin's choice, 2026-11-10). `SettingsFile` reads and writes it; the known-answer tests in `SecretMoney.Core.Tests/SettingsFileTests.cs` lock it. **Changing it needs the owner's approval**, a new version of this document, and a plan for settings files already on disk. Never change a known-answer test's expected values to make it pass.
+
+Version 1 gained `ledgerFolder` and `qifFolder` on 2026-11-10, with Edwin's approval, before SecretMoney had written any settings file.
 
 ## Bytes
 
@@ -18,6 +20,8 @@ Every field is required; a field the format doesn't have, or a field given twice
 |---|---|
 | `formatVersion` | `1` |
 | `hledgerPath` | Where `hledger.exe` is, or `null` if not chosen yet |
+| `ledgerFolder` | SecretBeans' ledger root, the folder holding its period folders, or `null` |
+| `qifFolder` | The folder QIF files are written to (DOSBox-X's D: drive), or `null` |
 | `reviewAccount` | SecretBeans' review account, normally `expenses:review`. Non-empty |
 | `accounts` | The accounts to export, in the order shown; may be empty |
 | `categories` | MYM category names chosen in place of the defaults: hledger account → name. Written in ordinal order of the account; may be empty |
@@ -38,12 +42,14 @@ Each value of `categories` is a non-empty string. Whether it can be written to M
 
 ## Example
 
-Two accounts, one already exported to 2026-07-31, and two chosen category names. `SettingsFileTests` checks that `SettingsFile.Write` produces exactly this (607 bytes) and reads it back the same:
+Two accounts, one already exported to 2026-07-31, and two chosen category names. `SettingsFileTests` checks that `SettingsFile.Write` produces exactly this (673 bytes) and reads it back the same:
 
 ```json
 {
   "formatVersion": 1,
   "hledgerPath": "C:\\Tools\\hledger.exe",
+  "ledgerFolder": "C:\\Ledger",
+  "qifFolder": "C:\\MYM\\DriveD",
   "reviewAccount": "expenses:review",
   "accounts": [
     {
@@ -74,6 +80,8 @@ With nothing chosen yet, the file is:
 {
   "formatVersion": 1,
   "hledgerPath": null,
+  "ledgerFolder": null,
+  "qifFolder": null,
   "reviewAccount": "expenses:review",
   "accounts": [],
   "categories": {}

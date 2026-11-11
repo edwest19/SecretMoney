@@ -34,3 +34,30 @@ internal static class TestHelper
         return parts.Any(p => p is "bin" or "obj" or ".git" or ".vs" or "TestResults" or "artifacts");
     }
 }
+
+/// <summary>A private temporary folder for one test, deleted afterwards.</summary>
+internal sealed class TempFolder : IDisposable
+{
+    public TempFolder()
+    {
+        FullPath = Path.Combine(Path.GetTempPath(), "secretmoney-tests-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(FullPath);
+    }
+
+    public string FullPath { get; }
+
+    /// <summary>The path of a file or folder named <paramref name="name"/> in this folder.</summary>
+    public string PathOf(params string[] name) => Path.Combine([FullPath, .. name]);
+
+    public void Dispose()
+    {
+        try
+        {
+            Directory.Delete(FullPath, recursive: true);
+        }
+        catch (IOException)
+        {
+            // A leftover temp folder is harmless.
+        }
+    }
+}

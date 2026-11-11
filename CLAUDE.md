@@ -23,11 +23,11 @@
 ## Layout
 
 - `SecretMoney.Core/` — everything that isn't the window. Plain .NET 10, no Windows dependencies.
-  - `Qif/` — `QifWriter` (writes `docs/qif-format.md` version 1), `QifText` (cleaning and fitting text), `QifTransaction`, `QifAccountType`, `MymLimits` (25 / 40 / 20, from round 2), `QifFormatException`. Nothing in the app uses them yet.
-  - `Ledger/` — `HledgerCsvReader` (reads `hledger print -x -O csv`, `docs/secretbeans-input.md`), `LedgerAccounts` (one account's entries; totals), `LedgerTransaction`, `LedgerPosting`, `AccountEntry`, `LedgerFormatException`. Nothing in the app uses them yet.
-  - `Export/` — `ExportPlanner` (applies `docs/export-rules.md`; returns the files, their balances and anything that stops the export), `ExportRules` (each rule on its own; finds the accounts in `generated.journal`), `SettingsFile` (`docs/settings-format.md` version 1), `ExportSettings`, `MymAccount`, `ExportPlan`, `ExportFile`, `ExportProblem`, `SettingsFormatException`. Nothing in the app uses them yet.
+  - `Qif/` — `QifWriter` (writes `docs/qif-format.md` version 1), `QifText` (cleaning and fitting text), `QifTransaction`, `QifAccountType`, `MymLimits` (25 / 40 / 20, from round 2), `QifFormatException`.
+  - `Ledger/` — `SecretBeansPeriod` (finds the newest period, as SecretBeans' README does), `HledgerRunner` (runs `hledger check` and `hledger print -x -O csv`; the only code that starts a program), `HledgerException`, `HledgerCsvReader` (reads that CSV, `docs/secretbeans-input.md`), `LedgerAccounts` (one account's entries; totals), `LedgerTransaction`, `LedgerPosting`, `AccountEntry`, `LedgerFormatException`.
+  - `Export/` — `ExportPlanner` (applies `docs/export-rules.md`; returns the files, their balances and anything that stops the export), `ExportRules` (each rule on its own; finds the accounts in `generated.journal`; the accounts and categories the window offers), `ExportFiles` (writes a plan's files into a folder), `SettingsFile` (`docs/settings-format.md` version 1), `ExportSettings` (and `AfterExport`, the last export dates), `MymAccount`, `AccountChoice`, `CategoryChoice`, `ExportPlan`, `ExportFile`, `ExportProblem`, `SettingsFormatException`.
 - `SecretMoney.Core.Tests/` — MSTest tests:
-  - `RepositoryRulesTests` — Microsoft packages only, no network API, only `runFullTrust`, no path built under AppData, no MYM file types
+  - `RepositoryRulesTests` — Microsoft packages only, no network API, no program started but hledger, only `runFullTrust`, no path built under AppData, no MYM file types
   - `ReleaseRulesTests` — publisher, version in three places, changelog, signing subject, pinned actions, package name, x64, solution file
   - `QifFixtureTests` — `tests/qif/*.qif` are ASCII, CRLF, with a `!Type` header and closed records
   - `QifWriterTests` — known-answer tests for `docs/qif-format.md`, including byte-for-byte copies of the round-2 files MYM imported
@@ -37,8 +37,9 @@
   - `ExportPlannerTests` — the export rules on the test period (known-answer files and balances) and every rule that stops an export
   - `ExportRulesTests` — each rule on its own
   - `SettingsFileTests` — known-answer tests for `docs/settings-format.md` and every refusal
-  - `TestHelper` — finds the repository root (the folder with `SecretMoney.slnx`)
-- `SecretMoney.UI/` — the WinUI 3 app, packaged as MSIX (x64). `App.xaml(.cs)`, `MainWindow.xaml(.cs)` (a placeholder window), `Package.appxmanifest`, `app.manifest`, `Assets/` (SecretLead's icons), `Properties/launchSettings.json`.
+  - `ExportWorkflowTests` — the window's steps in Core: finding the period, the hledger commands, the accounts and categories offered, writing the files, the last export dates
+  - `TestHelper` — finds the repository root (the folder with `SecretMoney.slnx`); `TempFolder`, a test's own temporary folder
+- `SecretMoney.UI/` — the WinUI 3 app, packaged as MSIX (x64). `App.xaml(.cs)`, `MainWindow.xaml(.cs)` (the export window; it only connects controls to Core, and keeps `settings.json` in `ApplicationData.Current.LocalFolder`), `Rows.cs` (`AccountRow`, `CategoryRow`: the window's list rows), `Package.appxmanifest`, `app.manifest`, `Assets/` (SecretLead's icons), `Properties/launchSettings.json`.
 - `docs/installation/` — installing MYM 12 in DOSBox-X: `INSTALL.md` and `01`–`05`. Written with Copilot.
 - `docs/research/` — `qif-compatibility.md` (what MYM 12 does with QIF), `mym-file-layout.md`, `budget-dbs-findings.md`.
 - `tests/qif/` — synthetic QIF test files and their `README.md` (questions and results).
@@ -67,18 +68,19 @@
 
 | README | Code | Tests |
 |---|---|---|
-| §0 the app only opens a window | `SecretMoney.UI/App.xaml.cs`, `MainWindow.xaml(.cs)` | — (read the code) |
+| §0, Using SecretMoney: the export window | `SecretMoney.UI/MainWindow.xaml(.cs)`, `Rows.cs` | `ExportWorkflowTests` (the Core steps it calls); the window itself — read the code |
 | §1 Microsoft packages only | every `.csproj` | `RepositoryRulesTests.OnlyAllowedMicrosoftPackagesAreReferenced` |
 | §1 no network calls | `SecretMoney.Core`, `SecretMoney.UI` | `RepositoryRulesTests.AppCodeHasNoNetworkAccess` |
+| §1, §3 one other program: hledger | `SecretMoney.Core/Ledger/HledgerRunner.cs` | `RepositoryRulesTests.AppCode_StartsNoProgramButHledger`, `ExportWorkflowTests.HledgerArguments_AreTheRecordedCommands` |
 | §1 only `runFullTrust` | `SecretMoney.UI/Package.appxmanifest` | `RepositoryRulesTests.AppManifest_DeclaresOnlyRunFullTrust`; `scripts/Test-Msix.ps1` in CI |
 | §1, §2 data only in the package data folder | `SecretMoney.UI`, `SecretMoney.Core` | `RepositoryRulesTests.AppCode_BuildsNoPathUnderAppDataItself` |
-| §2 stores nothing in this version | `SecretMoney.UI/App.xaml.cs`, `MainWindow.xaml.cs` | — (read the code) |
+| §2 what the app reads and writes | `SecretMoney.UI/MainWindow.xaml.cs`, `HledgerRunner`, `ExportFiles` | `ExportWorkflowTests`; the window — read the code |
 | §5 scripts | `scripts/powershell/*.ps1`, `scripts/dosbox/*.bat` | — (read the scripts) |
 | §6 MYM 12 QIF behaviour | `docs/research/qif-compatibility.md`, `tests/qif/` | `QifFixtureTests` (file bytes only; the results were observed in MYM) |
 | §1, §6 what SecretMoney writes | `docs/qif-format.md`, `SecretMoney.Core/Qif/` | `QifWriterTests`, `QifTextTests` |
-| §0 export rules | `docs/export-rules.md`, `SecretMoney.Core/Export/` | `ExportPlannerTests`, `ExportRulesTests` |
-| §2 the settings file (when the window is built) | `docs/settings-format.md`, `SecretMoney.Core/Export/SettingsFile.cs` | `SettingsFileTests` |
-| §0 reading SecretBeans through hledger | `docs/secretbeans-input.md`, `SecretMoney.Core/Ledger/`, `tests/secretbeans/` | `SecretBeansReaderTests`, `HledgerCsvReaderTests` |
+| §0 export rules | `docs/export-rules.md`, `SecretMoney.Core/Export/` | `ExportPlannerTests`, `ExportRulesTests`, `ExportWorkflowTests` |
+| §2 the settings file | `docs/settings-format.md`, `SecretMoney.Core/Export/SettingsFile.cs` | `SettingsFileTests` |
+| §0 reading SecretBeans through hledger | `docs/secretbeans-input.md`, `SecretMoney.Core/Ledger/`, `tests/secretbeans/` | `SecretBeansReaderTests`, `HledgerCsvReaderTests`, `ExportWorkflowTests` |
 | §7 no MYM files | `.gitignore` | `RepositoryRulesTests.Repository_ContainsNoManagingYourMoneyFiles` |
 | Install: self-contained MSIX | `SecretMoney.UI/SecretMoney.UI.csproj`, workflows | `scripts/Test-Msix.ps1` in CI |
 | Releases: version in three places | `Directory.Build.props`, `Package.appxmanifest`, `CHANGELOG.md` | `ReleaseRulesTests.ManifestVersion_IsTheProjectVersionPlusZero`, `Changelog_HasAnEntryForTheProjectVersion` |
@@ -94,7 +96,8 @@
 
 ## Known gaps
 
-- The exporter isn't finished (README §10): the QIF writer, the SecretBeans reader and the export rules (`docs/export-rules.md`) are built; the window isn't. The window will: run `hledger print -x -O csv` on the period's `generated.journal` and `opening.journal` (hledger isn't on the PATH on Edwin's PC, so it must be told where `hledger.exe` is); keep the settings file in `ApplicationData.Current.LocalFolder`; let Edwin choose accounts, file names, types, category names, the first start date and the last date; show anything that stops the export and each account's balances; write the files to a folder he picks; then set each exported account's `lastExported`.
+- The export window has been built by CI but not run on Windows, and SecretMoney hasn't been used with real data (README §10). Not tried: hledger, started from the packaged app, writing its CSV into `ApplicationData.Current.TemporaryFolder`.
+- A transaction dated on or before an account's `lastExported` that reaches SecretBeans in a later download is never exported (`docs/export-rules.md`, "Dates").
 - No Backup for the settings file: Edwin chose that uninstalling deletes everything (2026-11-10).
 - `scripts/powershell/Install-SecretMoney.ps1` line 107 has a truncated message.
 - `.github/Copilot-Instructions.md` still names SecretForecast.

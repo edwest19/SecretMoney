@@ -20,7 +20,7 @@ public static class SettingsFile
     /// <summary>The version of docs/settings-format.md this code reads and writes.</summary>
     public const int FormatVersion = 1;
 
-    private static readonly string[] TopLevel = ["formatVersion", "hledgerPath", "reviewAccount", "accounts", "categories"];
+    private static readonly string[] TopLevel = ["formatVersion", "hledgerPath", "ledgerFolder", "qifFolder", "reviewAccount", "accounts", "categories"];
     private static readonly string[] AccountFields = ["hledgerAccount", "secretBeansName", "fileName", "type", "lastExported"];
 
     /// <summary>The settings as the file's text: indented JSON, LF line endings, ending with LF.</summary>
@@ -33,6 +33,8 @@ public static class SettingsFile
             w.WriteStartObject();
             w.WriteNumber("formatVersion", FormatVersion);
             WriteStringOrNull(w, "hledgerPath", settings.HledgerPath);
+            WriteStringOrNull(w, "ledgerFolder", settings.LedgerFolder);
+            WriteStringOrNull(w, "qifFolder", settings.QifFolder);
             w.WriteString("reviewAccount", settings.ReviewAccount);
             w.WriteStartArray("accounts");
             foreach (var a in settings.Accounts)
@@ -85,6 +87,8 @@ public static class SettingsFile
             }
 
             var hledgerPath = StringOrNull(root["hledgerPath"], "hledgerPath");
+            var ledgerFolder = StringOrNull(root["ledgerFolder"], "ledgerFolder");
+            var qifFolder = StringOrNull(root["qifFolder"], "qifFolder");
             var reviewAccount = StringOrNull(root["reviewAccount"], "reviewAccount");
             if (string.IsNullOrEmpty(reviewAccount))
             {
@@ -147,7 +151,7 @@ public static class SettingsFile
                 }
             }
 
-            return new ExportSettings(hledgerPath, reviewAccount, accounts, categories);
+            return new ExportSettings(hledgerPath, ledgerFolder, qifFolder, reviewAccount, accounts, categories);
         }
     }
 
