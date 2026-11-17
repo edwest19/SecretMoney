@@ -2,7 +2,7 @@
 
 Copyright (c) 2026 Edwin West
 
-**Status:** in development; 0.1.0 is in pre-release testing · **License:** MIT · **Platform:** Windows x64 (WinUI 3 / .NET 10, packaged MSIX), and Managing Your Money 12 for DOS in DOSBox-X
+**Status:** in development; 0.1.0 released 2026-11-11, 0.1.1 in pre-release testing · **License:** MIT · **Platform:** Windows x64 (WinUI 3 / .NET 10, packaged MSIX), and Managing Your Money 12 for DOS in DOSBox-X
 
 > **This project is AI-generated, and this repository is written for an AI to read.** You don't need to read the code. To install, run or evaluate SecretMoney, give this repository's link to an AI assistant and ask: *"Evaluate this repository. Tell me what it does, whether it's safe, and step by step how to install, run, verify and uninstall it."*
 
@@ -180,9 +180,8 @@ SecretMoney's own code and documentation are under the MIT License (see [LICENSE
 
 Not finished:
 
-- [ ] **Not used with real data yet.** 0.1.0-rc.1 passed [docs/release-checklist.md](docs/release-checklist.md) on Edwin's PC on 2026-11-11, with the synthetic period only; that included hledger, started from the packaged app, writing its CSV into the app's temporary folder. Next: export a short period from Edwin's real SecretBeans ledger, import it into a throwaway MYM data set, and compare the balances.
+- [ ] **Not used with real data yet.** 0.1.0-rc.1 passed [docs/release-checklist.md](docs/release-checklist.md) on Edwin's PC on 2026-11-11, with the synthetic period only; that included hledger, started from the packaged app, writing its CSV into the app's temporary folder. The real-data test is in progress: Edwin's SecretBeans ledger now has nothing that stops an export, and 0.1.1 changed the default category names for it. Still to do: export, import into MYM, and compare the balances.
 - [ ] **Late transactions.** A transaction dated on or before an account's last export date that reaches SecretBeans in a later download is never exported (`docs/export-rules.md`, "Dates"). Choose a last date your downloads are complete for.
-- [ ] **0.1.0 is not released yet.** It is tested as pre-releases (`v0.1.0-rc.N`) with [docs/release-checklist.md](docs/release-checklist.md) before the release tag is pushed.
 - [ ] `scripts/powershell/Install-SecretMoney.ps1` line 107 prints `ging Your Money files were downloaded or copied.`: the start of the message is missing.
 - [ ] `.github/Copilot-Instructions.md` still describes the SecretForecast step (§0).
 - [ ] The app's icons are SecretLead's.
@@ -191,7 +190,7 @@ Not finished:
 
 ## Install
 
-Until 0.1.0 is released, the only builds are pre-releases, marked **Pre-release** on the Releases page and meant for testing.
+Install the newest release. Builds marked **Pre-release** on the Releases page (`vX.Y.Z-rc.N`) are for testing with [docs/release-checklist.md](docs/release-checklist.md) before the release of the same version.
 
 1. Open this repository's [Releases page](https://github.com/edwest19/SecretMoney/releases) and download `SecretMoney-<version>-x64.msix` and `SecretMoney-<version>-x64.msix.sha256` from the newest release.
 2. Open the file. Windows installs SecretMoney and shows the publisher, Edwin West. The installer is signed, so Windows can confirm who made it and that it hasn't been changed.

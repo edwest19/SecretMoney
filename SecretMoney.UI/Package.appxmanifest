@@ -20,7 +20,7 @@
   <Identity
     Name="129542DC-DC08-4A7E-BD35-99912FB37B80"
     Publisher="CN=Edwin West, O=Edwin West, L=Huntington, S=ny, C=US"
-    Version="0.1.0.0" />
+    Version="0.1.1.0" />
 
   <Properties>
     <DisplayName>SecretMoney</DisplayName>
