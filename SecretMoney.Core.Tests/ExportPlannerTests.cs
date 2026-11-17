@@ -190,16 +190,16 @@ public sealed class ExportPlannerTests
         LedgerTransaction[] transactions =
         [
             T(1, "CAR", ("assets:bank:a", -5m, "$"), ("expenses:auto:insurance", 5m, "$")),
-            T(2, "HOUSE", ("assets:bank:a", -6m, "$"), ("expenses:house:insurance", 6m, "$")),
+            T(2, "BUSINESS CAR", ("assets:bank:a", -6m, "$"), ("expenses:business:auto:insurance", 6m, "$")),
         ];
         var settings = ExportSettings.Empty with { Accounts = [Bank] };
 
         var clash = ExportPlanner.Plan(transactions, [], settings, July1, July31);
-        var renamed = ExportPlanner.Plan(transactions, [], settings with { Categories = new Dictionary<string, string> { ["expenses:house:insurance"] = "home insurance" } }, July1, July31);
+        var renamed = ExportPlanner.Plan(transactions, [], settings with { Categories = new Dictionary<string, string> { ["expenses:business:auto:insurance"] = "business auto ins" } }, July1, July31);
 
-        Assert.Contains("expenses:auto:insurance and expenses:house:insurance would all be the MYM category 'insurance'", clash.Problems.Single().Reason);
+        Assert.Contains("expenses:auto:insurance and expenses:business:auto:insurance would all be the MYM category 'auto insurance'", clash.Problems.Single().Reason);
         Assert.IsTrue(renamed.CanExport);
-        CollectionAssert.AreEqual(new[] { "insurance", "home insurance" }, renamed.Files[0].Entries.Select(e => e.Category).ToArray());
+        CollectionAssert.AreEqual(new[] { "auto insurance", "business auto ins" }, renamed.Files[0].Entries.Select(e => e.Category).ToArray());
     }
 
     [TestMethod]
@@ -208,12 +208,12 @@ public sealed class ExportPlannerTests
         LedgerTransaction[] transactions =
         [
             T(1, "MOVE", ("assets:bank:a", -5m, "$"), ("assets:bank:b", 5m, "$")),
-            T(2, "FEE", ("assets:bank:a", -1m, "$"), ("expenses:bank:transfer", 1m, "$")),
+            T(2, "FEE", ("assets:bank:a", -1m, "$"), ("expenses:transfer", 1m, "$")),
         ];
 
         var plan = ExportPlanner.Plan(transactions, [], ExportSettings.Empty with { Accounts = [Bank] }, July1, July31);
 
-        Assert.Contains("(transfers) and expenses:bank:transfer would all be the MYM category 'Transfer'", plan.Problems.Single().Reason);
+        Assert.Contains("(transfers) and expenses:transfer would all be the MYM category 'Transfer'", plan.Problems.Single().Reason);
     }
 
     [TestMethod]
