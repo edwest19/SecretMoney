@@ -29,9 +29,9 @@ One entry for each transaction with a posting to the account (secretbeans-input.
 | `T` | The account's own amount. For a Charge account a charge is negative and a payment positive, as hledger already has it |
 | `P` | The description, cleaned, first 25 characters |
 | `M` | When the cleaned description is longer than 25 characters, its first 40; otherwise none |
-| `L` | `Transfer` when the other posting is to an `assets:` or `liabilities:` account; otherwise the name chosen in the settings for the other account, or by default the other account's last part in lower case, cleaned, first 20 characters: `expenses:food:groceries` → `groceries` |
+| `L` | `Transfer` when the other posting is to an `assets:` or `liabilities:` account; otherwise the name chosen in the settings for the other account, or by default the other account's last two parts after its first, joined by a space, in lower case, cleaned, first 20 characters: `expenses:food:groceries` → `food groceries`, `expenses:house:utilities:gas` → `utilities gas`, `income:salary` → `salary` |
 
-**Choosing category names.** The window lists every hledger account the chosen accounts' entries use as a category, in name order, with its name now (`ExportRules.CategoryChoices`): not transfers, not anything uncategorised or `equity:`, and not entries with more than one other posting. The settings keep only names that differ from the default (`ExportRules.ChosenCategories`), and keep names chosen for accounts this period doesn't use.
+**Choosing category names.** The window lists every hledger account the chosen accounts' entries use as a category, in name order, with its name now (`ExportRules.CategoryChoices`): not transfers, not anything uncategorised or `equity:`, and not entries with more than one other posting. A default longer than 20 characters is cut, so choose a shorter name for it in the window. The settings keep only names that differ from the default (`ExportRules.ChosenCategories`), and keep names chosen for accounts this period doesn't use.
 
 A transfer between two of your accounts, or a card payment, is recorded once by SecretBeans but is an entry in both accounts, both under `Transfer`. MYM keeps both balances right but does not link the two entries (research, round 2).
 

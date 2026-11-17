@@ -87,7 +87,7 @@ The commands are Windows PowerShell, one line each, for 0.1.0-rc.1. For a later 
   ```
 
 - [ ] **3. Accounts:** three rows, all ticked, all "never exported": `assets:bank:checking` CHECKING Bank, `assets:bank:savings` SAVINGS Bank, `liabilities:creditcard:visa` VISA Charge.
-- [ ] **4. Category names:** five rows, unchanged: `expenses:food:dining` dining, `expenses:food:groceries` groceries, `expenses:utilities:gas` gas, `income:interest` interest, `income:salary` salary.
+- [ ] **4. Category names:** five rows, unchanged: `expenses:food:dining` food dining, `expenses:food:groceries` food groceries, `expenses:utilities:gas` utilities gas, `income:interest` interest, `income:salary` salary.
 - [ ] **5. Dates:** 2026-07-03 and 2026-07-31.
 - [ ] **Check** with those dates is stopped: "Nothing can be written yet: 1 problem(s)." and a line for `2026-07-20 CHECK 501 (assets:bank:checking)` saying it is in `expenses:review:check`. **Write QIF files** stays unavailable.
 
@@ -107,7 +107,7 @@ The commands are Windows PowerShell, one line each, for 0.1.0-rc.1. For a later 
 
   | File | SHA-256 |
   |---|---|
-  | `CHECKING.QIF` (243 bytes) | `E2C200D9A1FA0A2E04367245AC19C62DFD0C1A93E29185F14F111696617919CA` |
+  | `CHECKING.QIF` (248 bytes) | `B2B5BDBEE77A6DCC915F25CC0B591E76E9D079E7BA4403DB987B671F8D7A6D06` |
   | `SAVINGS.QIF` (173 bytes) | `7A9B2F1B8ED719AC9829D9751B5F2722E3CE586DF968EBD8DFCECA5C555A4010` |
   | `VISA.QIF` (75 bytes) | `6C361F12AA0851D683A3CB7F8FE7607FC0ED7F243FC5CFD8571D994E4FD30ECD` |
 

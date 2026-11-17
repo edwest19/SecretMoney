@@ -117,9 +117,9 @@ public sealed class ExportWorkflowTests
         CollectionAssert.AreEqual(
             new[]
             {
-                new CategoryChoice("expenses:food:dining", "dining", "Eating out"),
-                new CategoryChoice("expenses:food:groceries", "groceries", "groceries"),
-                new CategoryChoice("expenses:utilities:gas", "gas", "gas"),
+                new CategoryChoice("expenses:food:dining", "food dining", "Eating out"),
+                new CategoryChoice("expenses:food:groceries", "food groceries", "food groceries"),
+                new CategoryChoice("expenses:utilities:gas", "utilities gas", "utilities gas"),
                 new CategoryChoice("income:interest", "interest", "interest"),
                 new CategoryChoice("income:salary", "salary", "salary"),
             },

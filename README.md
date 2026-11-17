@@ -211,7 +211,7 @@ Installing MYM 12 itself: §5.
 2. Start SecretMoney. In **1. Where things are**, choose `hledger.exe`, the SecretBeans ledger folder (the one holding the period folders) and the QIF folder (`OneDrive\MYM\DriveD`, MYM's D: drive). SecretMoney remembers them.
 3. **2. Read SecretBeans** runs `hledger check` on the newest period, then reads `generated.journal` and `opening.journal` through hledger, and shows the period's name and how many transactions it has.
 4. **3. Accounts:** tick the accounts to export, and change a file name (up to 8 characters) or type (Bank or Charge) if you need to.
-5. **4. Category names:** change any MYM category name (up to 20 characters, no colon). Transfers between your accounts are always `Transfer`.
+5. **4. Category names:** each starts as the hledger account's last two parts after its first, joined by a space (`expenses:pets:food` is `pets food`); change any MYM category name (up to 20 characters, no colon). Transfers between your accounts are always `Transfer`.
 6. **5. Dates:** the first start date is used only for accounts never exported; it starts as the period's first transaction date. The last date starts as the period's last transaction date.
 7. **6. Check and write:** **Check** lists anything that stops the export, or each file with its entries, dates and the balance before and after. **Write QIF files** writes them, asks before replacing a file, and records each account's last export date.
 8. In MYM: create an account never exported before with the **balance before** as its opening balance, import each file into its account from D:, and check that MYM shows the **balance after**.

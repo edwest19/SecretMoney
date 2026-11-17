@@ -12,12 +12,16 @@ namespace SecretMoney.Core.Tests;
 public sealed class ExportRulesTests
 {
     [TestMethod]
-    [DataRow("expenses:food:groceries", "groceries")]
+    [DataRow("expenses:food:groceries", "food groceries")]
     [DataRow("income:Salary", "salary")]
-    [DataRow("expenses:house:utilities:gas", "gas")]
+    [DataRow("expenses:house:utilities:gas", "utilities gas")]
+    [DataRow("expenses:cars:gas", "cars gas")]
+    [DataRow("expenses:pets:food", "pets food")]
     [DataRow("expenses:café", "cafe")]
+    [DataRow("expenses", "expenses")]
     [DataRow("expenses:abcdefghijklmnopqrstuvwxyz", "abcdefghijklmnopqrst")]
-    public void DefaultCategory_IsTheLastPartInLowerCase(string account, string category)
+    [DataRow("expenses:charity:save the children", "charity save the chi")]
+    public void DefaultCategory_IsTheLastTwoPartsInLowerCase(string account, string category)
     {
         Assert.AreEqual(category, ExportRules.DefaultCategory(account));
         Assert.IsNull(ExportRules.CategoryProblem(category));
