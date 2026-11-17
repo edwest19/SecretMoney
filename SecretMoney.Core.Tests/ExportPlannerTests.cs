@@ -82,7 +82,7 @@ public sealed class ExportPlannerTests
         Assert.AreEqual(
             "!Type:Bank\r\n" +
             "D07/21/2026\r\nT-2400.00\r\nPOnline Transfer to SAV ..\r\nMOnline Transfer to SAV ...3456 transacti\r\nLTransfer\r\n^\r\n" +
-            "D07/22/2026\r\nT-6.25\r\nPCAFE ECLAIR, \"THE BEST\"\r\nLdining\r\n^\r\n" +
+            "D07/22/2026\r\nT-6.25\r\nPCAFE ECLAIR, \"THE BEST\"\r\nLfood dining\r\n^\r\n" +
             "D07/25/2026\r\nT-200.00\r\nPPayment Thank You - Web\r\nLTransfer\r\n^\r\n",
             Text(plan.Files[0]));
         Assert.AreEqual(
