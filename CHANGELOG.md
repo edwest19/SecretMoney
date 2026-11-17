@@ -4,9 +4,12 @@
 
 Every release has a heading `## [X.Y.Z] - YYYY-MM-DD`; the release workflow refuses a tag without one and uses the entry as the release notes.
 
-## [Unreleased]
+## [0.1.1] - 2026-11-17
+
+Default category names come from the hledger account's last two parts, for the first import of real data into MYM. The README now records that 0.1.0 was released.
 
 ### Changed
+- **The README is up to date:** 0.1.0 was released on 2026-11-11; the status, Install and §10 now say so, and that the real-data test is in progress.
 - **Default category names are the hledger account's last two parts.** Leaving out the first part (`expenses`, `income`), the last two are joined by a space, in lower case, cut to 20 characters: `expenses:pets:food` is now `pets food`, not `food`; `expenses:house:utilities:gas` is `utilities gas`; `income:salary` stays `salary`. The owner chose this on 2026-11-17 after the real ledger's last parts clashed (`gas`, `fees`, `insurance`, `ssa`) or lost their meaning (`food`). A space is used because MYM 12 keeps a colon as part of the name. `docs/export-rules.md`, `ExportRulesTests`, `ExportPlannerTests` (the known-answer `CHECKING.QIF` now has `Lfood dining`), `ExportWorkflowTests` and `docs/release-checklist.md` changed with it.
 
 ## [0.1.0] - 2026-11-11

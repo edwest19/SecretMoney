@@ -4,11 +4,11 @@
 
 The owner works through this list with each pre-release (`vX.Y.Z-rc.N`) on a Windows PC before pushing the release tag `vX.Y.Z` on the same commit (README, "Releases"). It installs the signed build and exports the synthetic period in `tests/secretbeans`, whose files and balances are known answers in `ExportPlannerTests` (`WholeJuly_IsStoppedByTheCheckAwaitingReview`, `FromJuly21_KnownAnswer`). It uses no real data and no MYM data; real data is a separate test (README §10).
 
-The commands are Windows PowerShell, one line each, for 0.1.0-rc.1. For a later pre-release, change the version and tag in them. Each item is pass or fail; for a failure, note what the window or PowerShell showed.
+The commands are Windows PowerShell, one line each, for 0.1.1-rc.1. For a later pre-release, change the version and tag in them. Each item is pass or fail; for a failure, note what the window or PowerShell showed.
 
 ## 1. Before the tag
 
-- [ ] The repository on the PC is on `main`, up to date, and its tests pass: as many as the Build workflow ran on `main` (157 for 0.1.0-rc.1). The commands assume the clone is in `source\repos\SecretMoney` under the user's folder.
+- [ ] The repository on the PC is on `main`, up to date, and its tests pass: as many as the Build workflow ran on `main` (161 for 0.1.1-rc.1). The commands assume the clone is in `source\repos\SecretMoney` under the user's folder.
 
   ```powershell
   cd "$env:USERPROFILE\source\repos\SecretMoney"; git switch main; git pull; dotnet test SecretMoney.Core.Tests/SecretMoney.Core.Tests.csproj
@@ -27,32 +27,33 @@ The commands are Windows PowerShell, one line each, for 0.1.0-rc.1. For a later 
 - [ ] Push the tag on the commit to release: `main` after the release pull request is merged. `git log` shows that merge.
 
   ```powershell
-  cd "$env:USERPROFILE\source\repos\SecretMoney"; git switch main; git pull; git log -1 --oneline; git tag -a v0.1.0-rc.1 -m "SecretMoney 0.1.0-rc.1"; git push origin v0.1.0-rc.1
+  cd "$env:USERPROFILE\source\repos\SecretMoney"; git switch main; git pull; git log -1 --oneline; git tag -a v0.1.1-rc.1 -m "SecretMoney 0.1.1-rc.1"; git push origin v0.1.1-rc.1
   ```
 
-- [ ] In GitHub: **Actions → Release → Review deployments → `release` → Approve and deploy.** The run finishes green and the Releases page shows **SecretMoney 0.1.0-rc.1**, marked **Pre-release**, with `SecretMoney-0.1.0-x64.msix` and `SecretMoney-0.1.0-x64.msix.sha256`.
+- [ ] In GitHub: **Actions → Release → Review deployments → `release` → Approve and deploy.** The run finishes green and the Releases page shows **SecretMoney 0.1.1-rc.1**, marked **Pre-release**, with `SecretMoney-0.1.1-x64.msix` and `SecretMoney-0.1.1-x64.msix.sha256`.
 - [ ] Download both files:
 
   ```powershell
-  gh release download v0.1.0-rc.1 -R edwest19/SecretMoney -D "$env:USERPROFILE\Downloads\SecretMoney-0.1.0-rc.1"
+  gh release download v0.1.1-rc.1 -R edwest19/SecretMoney -D "$env:USERPROFILE\Downloads\SecretMoney-0.1.1-rc.1"
   ```
 
 - [ ] The hash matches the `.sha256` file. Expect `hash matches`:
 
   ```powershell
-  cd "$env:USERPROFILE\Downloads\SecretMoney-0.1.0-rc.1"; if ((Get-FileHash .\SecretMoney-0.1.0-x64.msix).Hash -eq (Get-Content .\SecretMoney-0.1.0-x64.msix.sha256).Split(' ')[0]) { 'hash matches' } else { 'HASH DIFFERS' }
+  cd "$env:USERPROFILE\Downloads\SecretMoney-0.1.1-rc.1"; if ((Get-FileHash .\SecretMoney-0.1.1-x64.msix).Hash -eq (Get-Content .\SecretMoney-0.1.1-x64.msix.sha256).Split(' ')[0]) { 'hash matches' } else { 'HASH DIFFERS' }
   ```
 
 - [ ] The signature is valid, made by Edwin West, and timestamped. Expect `Status : Valid`, a signer subject of `CN=Edwin West, O=Edwin West, L=Huntington, S=ny, C=US`, and a timestamp certificate:
 
   ```powershell
-  cd "$env:USERPROFILE\Downloads\SecretMoney-0.1.0-rc.1"; Get-AuthenticodeSignature .\SecretMoney-0.1.0-x64.msix | Format-List Status, SignerCertificate, TimeStamperCertificate
+  cd "$env:USERPROFILE\Downloads\SecretMoney-0.1.1-rc.1"; Get-AuthenticodeSignature .\SecretMoney-0.1.1-x64.msix | Format-List Status, SignerCertificate, TimeStamperCertificate
   ```
 
 ## 3. Install
 
-- [ ] Open `SecretMoney-0.1.0-x64.msix`. The installer shows SecretMoney, publisher Edwin West, and installs it.
-- [ ] The installed package is version 0.1.0.0 from Edwin West:
+- [ ] If any SecretMoney is installed, uninstall it first (**Settings → Apps → Installed apps → SecretMoney → Uninstall**), so the checklist starts from empty settings. This deletes its settings and last export dates.
+- [ ] Open `SecretMoney-0.1.1-x64.msix`. The installer shows SecretMoney, publisher Edwin West, and installs it.
+- [ ] The installed package is version 0.1.1.0 from Edwin West:
 
   ```powershell
   Get-AppxPackage -Name 129542DC-DC08-4A7E-BD35-99912FB37B80 | Format-List Name, Version, Publisher, PackageFamilyName
