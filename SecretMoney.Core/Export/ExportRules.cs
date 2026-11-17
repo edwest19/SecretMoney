@@ -18,9 +18,19 @@ public static partial class ExportRules
     /// <summary>The longest file name stem DOS allows: 8 characters before <c>.QIF</c>.</summary>
     public const int FileStemLength = 8;
 
-    /// <summary>The category for an hledger account with no chosen name: its last part, in lower case, fitted to 20 characters.</summary>
-    public static string DefaultCategory(string hledgerAccount) =>
-        QifText.Fit(hledgerAccount.Split(':')[^1].ToLowerInvariant(), MymLimits.CategoryLength);
+    /// <summary>
+    /// The category for an hledger account with no chosen name: leave out its first part (<c>expenses</c>,
+    /// <c>income</c>), join the last two of the rest with a space, in lower case, fitted to 20 characters:
+    /// <c>expenses:pets:food</c> is <c>pets food</c>, <c>income:salary</c> is <c>salary</c>. An account with one
+    /// part is that part. A space, not a colon, because MYM 12 keeps a colon as part of the name (round 2).
+    /// </summary>
+    public static string DefaultCategory(string hledgerAccount)
+    {
+        var parts = hledgerAccount.Split(':');
+        var rest = parts.Length > 1 ? parts[1..] : parts;
+        var name = string.Join(' ', rest[^Math.Min(2, rest.Length)..]);
+        return QifText.Fit(name.ToLowerInvariant(), MymLimits.CategoryLength);
+    }
 
     /// <summary>Why <paramref name="category"/> can't be written (docs/qif-format.md, "Record"), or null if it can.</summary>
     public static string? CategoryProblem(string category) =>
