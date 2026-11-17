@@ -17,7 +17,7 @@ Copyright (c) 2026 Edwin West
 SecretMoney lets you keep your accounts in **Managing Your Money 12 for DOS** (MYM 12) on a modern Windows PC. It has two parts:
 
 1. **The MYM 12 environment** (§5): documentation and scripts for installing and running MYM 12 in DOSBox-X, with its working drives in OneDrive, and research into what MYM 12 does when it imports QIF files (§6).
-2. **The SecretMoney app** (`SecretMoney.UI`, `SecretMoney.Core`): a Windows app that turns the newest period of a [SecretBeans](https://github.com/edwest19/SecretBeans) ledger into QIF files MYM 12 can import, one file per MYM account. It has one window ("Using SecretMoney", below). Every rule it applies is in `SecretMoney.Core`: reading SecretBeans ([docs/secretbeans-input.md](docs/secretbeans-input.md)), the export rules ([docs/export-rules.md](docs/export-rules.md)) and the QIF it writes (§6). It has not been used with real data yet (§10).
+2. **The SecretMoney app** (`SecretMoney.UI`, `SecretMoney.Core`): a Windows app that turns the newest period of a [SecretBeans](https://github.com/edwest19/SecretBeans) ledger into QIF files MYM 12 can import, one file per MYM account. It has one window ("Using SecretMoney", below). Every rule it applies is in `SecretMoney.Core`: reading SecretBeans ([docs/secretbeans-input.md](docs/secretbeans-input.md)), the export rules ([docs/export-rules.md](docs/export-rules.md)) and the QIF it writes (§6). It was first used with real data on 2026-11-17 (§10).
 
 SecretMoney reads a SecretBeans period through **hledger**, the program SecretBeans uses: `hledger print -x -O csv` prints each journal as CSV, and `SecretMoney.Core` reads that. A transfer or card payment that SecretBeans records once, in one account, becomes an entry in each of the two accounts. Only hledger 1.51.2's output has been tested.
 
@@ -178,9 +178,13 @@ SecretMoney's own code and documentation are under the MIT License (see [LICENSE
 
 ## 10. Status and known limitations
 
+**Used with real data.** On 2026-11-17, 0.1.1 exported 22 months of Edwin's SecretBeans ledger (five accounts, 2,071 entries); each file matched a copy built independently from the journal, and after the import every MYM balance matched SecretMoney's balance after ([docs/research/qif-compatibility.md](docs/research/qif-compatibility.md), "Real data").
+
 Not finished:
 
-- [ ] **Not used with real data yet.** 0.1.0-rc.1 passed [docs/release-checklist.md](docs/release-checklist.md) on Edwin's PC on 2026-11-11, with the synthetic period only; that included hledger, started from the packaged app, writing its CSV into the app's temporary folder. The real-data test is in progress: Edwin's SecretBeans ledger now has nothing that stops an export, and 0.1.1 changed the default category names for it. Still to do: export, import into MYM, and compare the balances.
+- [ ] **Opening balances are typed by hand in MYM** (Using SecretMoney, step 8). Whether MYM's *Previous Balance* can be entered on a new account before importing is untested.
+- [ ] **Category names typed in the window are kept only when you press Check**. **Read the newest period** rebuilds the list from the settings and drops names typed since the last Check (`MainWindow.ShowCategories`).
+- [ ] **A default category name longer than 20 characters is cut without a warning** (`ExportRules.DefaultCategory`); give such a category a shorter name in the window.
 - [ ] **Late transactions.** A transaction dated on or before an account's last export date that reaches SecretBeans in a later download is never exported (`docs/export-rules.md`, "Dates"). Choose a last date your downloads are complete for.
 - [ ] `scripts/powershell/Install-SecretMoney.ps1` line 107 prints `ging Your Money files were downloaded or copied.`: the start of the message is missing.
 - [ ] `.github/Copilot-Instructions.md` still describes the SecretForecast step (§0).
@@ -213,7 +217,8 @@ Installing MYM 12 itself: §5.
 5. **4. Category names:** each starts as the hledger account's last two parts after its first, joined by a space (`expenses:pets:food` is `pets food`); change any MYM category name (up to 20 characters, no colon). Transfers between your accounts are always `Transfer`.
 6. **5. Dates:** the first start date is used only for accounts never exported; it starts as the period's first transaction date. The last date starts as the period's last transaction date.
 7. **6. Check and write:** **Check** lists anything that stops the export, or each file with its entries, dates and the balance before and after. **Write QIF files** writes them, asks before replacing a file, and records each account's last export date.
-8. In MYM: create an account never exported before with the **balance before** as its opening balance, import each file into its account from D:, and check that MYM shows the **balance after**.
+8. In MYM: create each account never exported before and import its file from D:. Then give it the **balance before**: on 2026-11-17 MYM's *Previous Balance* field could not be entered, so type one entry dated the day before the first export, payee `Opening balance`, amount the balance before (a deposit for a bank account, a charge for a card). Check that MYM shows the **balance after** ([docs/research/qif-compatibility.md](docs/research/qif-compatibility.md), "Real data").
+9. To export dates again (for example after changing category names), untick the accounts and press **Check**: that clears their last export dates. Then read the period, tick them again and **Check**.
 
 ## Building and testing
 

@@ -98,7 +98,7 @@
 
 ## Known gaps
 
-- SecretMoney hasn't been used with real data (README §10); the real-data test is in progress. 0.1.0-rc.1 passed `docs/release-checklist.md` on Edwin's PC on 2026-11-11 with the synthetic period, including hledger, started from the packaged app, writing its CSV into `ApplicationData.Current.TemporaryFolder`.
+- SecretMoney was first used with real data on 2026-11-17 (README §10, `docs/research/qif-compatibility.md` "Real data"); MYM opening balances are typed by hand. Typed category names are dropped if the period is read again before Check; a default name over 20 characters is cut without a warning. 0.1.0-rc.1 passed `docs/release-checklist.md` on Edwin's PC on 2026-11-11 with the synthetic period, including hledger, started from the packaged app, writing its CSV into `ApplicationData.Current.TemporaryFolder`.
 - A transaction dated on or before an account's `lastExported` that reaches SecretBeans in a later download is never exported (`docs/export-rules.md`, "Dates").
 - No Backup for the settings file: Edwin chose that uninstalling deletes everything (2026-11-10).
 - `scripts/powershell/Install-SecretMoney.ps1` line 107 has a truncated message.
