@@ -4,6 +4,11 @@
 
 Every release has a heading `## [X.Y.Z] - YYYY-MM-DD`; the release workflow refuses a tag without one and uses the entry as the release notes.
 
+## [Unreleased]
+
+### Documentation
+- **Real data.** 0.1.1 exported 22 months of the owner's SecretBeans ledger and MYM 12 imported it with matching balances (`docs/research/qif-compatibility.md`, "Real data"; README §10). MYM's *Previous Balance* could not be entered, so the README's steps now type the opening balance as an entry. §10 also records two window behaviours found on the way: typed category names are dropped if the period is read again before Check, and a default name over 20 characters is cut without a warning.
+
 ## [0.1.1] - 2026-11-17
 
 Default category names come from the hledger account's last two parts, for the first import of real data into MYM. The README now records that 0.1.0 was released.

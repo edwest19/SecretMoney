@@ -377,6 +377,30 @@ links them.
 - MYM warns when the same file is imported twice; the exporter still exports only dates after
   the previous export.
 
+## Real data (2026-11-17)
+
+> Added by Claude (Anthropic) with Edwin West, 2026-11-17.
+
+SecretMoney 0.1.1 exported Edwin's real SecretBeans ledger, 2025-01-01 to 2026-10-31, into a
+MYM data set with no transactions (a dated copy of it was taken first). The files are not in
+this repository (§7 of the README: no personal financial data).
+
+- Five files, one per account: three `!Type:Bank`, two `!Type:CCard`; 2,071 entries in all,
+  68 category names (the longest exactly 20 characters), `Transfer` included.
+- Before the import, each file was compared byte for byte with a copy built independently from
+  the journal by the export rules: all five identical.
+- All five imported. MYM created the categories it didn't have, as in round 2.
+- **Opening balance.** On the MYM account screen (View/Edit Money Account), *Previous Balance*
+  showed $0.00 and Edwin could not enter a value there.
+  Whether it can be entered when an account is created, before anything is imported, was not
+  tested. What worked: one entry typed by hand in each account, dated the day before the
+  first export, payee `Opening balance`, category `opening balance`, amount SecretMoney's
+  *balance before* (a deposit for a bank account, a charge for a card).
+- With those five entries, every account's balance in MYM matched SecretMoney's *balance
+  after*.
+
+Result: PASS.
+
 ## Account-Oriented QIF
 
 A future test should investigate whether MYM supports multi-account QIF structures.
@@ -475,7 +499,7 @@ Retain backups before importing large transaction sets.
 
 ## Status
 
-QIF is currently considered suitable for continued SecretMoney banking-import development because MYM 12 successfully imported the primary transaction fields and split transactions tested so far.
+QIF is currently considered suitable for continued SecretMoney banking-import development because MYM 12 successfully imported the primary transaction fields and split transactions tested so far, and on 2026-11-17 it imported 22 months of real data from SecretMoney 0.1.1 with matching balances ("Real data", above).
 
 Transfers and investments require additional research.
 
